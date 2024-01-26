@@ -1,1 +1,37 @@
-<p>register works!</p>
+<div class="registration-container">
+    <h1>Registration</h1>
+    <h3>Do you already have account?
+        <a class="link" routerLink="login">Log in here</a>
+    </h3>
+    <form class="registration-form" [formGroup]="registerForm" (ngSubmit)="register()">
+        <mat-form-field class="form-field">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" formControlName="username" placeholder="Kate...">
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" placeholder="smth@gmail.com...">
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+            <mat-label>Password</mat-label>
+            <input matInput [type]="isPasswordHidden ? 'password' : 'text'" formControlName="password">
+            <button mat-icon-button matSuffix (click)="isPasswordHidden = !isPasswordHidden"
+                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="isPasswordHidden">
+                <mat-icon>{{isPasswordHidden ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+            <mat-label>Confirm password</mat-label>
+            <input matInput [type]="isConfirmPasswordHidden ? 'password' : 'text'" formControlName="confirmPassword">
+            <button mat-icon-button matSuffix (click)="isConfirmPasswordHidden = !isConfirmPasswordHidden"
+                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="isConfirmPasswordHidden">
+                <mat-icon>{{isConfirmPasswordHidden ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" [disabled]="!registerForm.valid">Register</button>
+    </form>
+</div>

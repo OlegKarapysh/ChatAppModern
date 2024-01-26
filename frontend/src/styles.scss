@@ -1,5 +1,8 @@
 @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
 
+* {
+    box-sizing: border-box;
+}
 html,
 body {
     height: 100%;

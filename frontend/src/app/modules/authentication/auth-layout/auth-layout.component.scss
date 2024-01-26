@@ -1,0 +1,23 @@
+.auth-sectors-container {
+    display: flex;
+    height: 100%;
+}
+
+.auth-logo-sector {
+    width: 40%;
+    background: linear-gradient(
+        90deg,
+        rgb(12, 4, 168) 0%,
+        rgb(17, 17, 199) 35%,
+        rgba(0, 212, 255, 1) 100%
+    );
+}
+
+.auth-form-sector {
+    width: 60%;
+}
+
+.logo {
+    height: 100%;
+    width: 100%;
+}

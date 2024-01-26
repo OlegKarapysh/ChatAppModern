@@ -1,7 +1,7 @@
 <div class="registration-container">
     <h1>Registration</h1>
-    <h3>Do you already have account?
-        <a class="link" routerLink="login">Log in here</a>
+    <h3>Do you already have an account?
+        <a class="link" routerLink="/auth/login">Log in here</a>
     </h3>
     <form class="registration-form" [formGroup]="registerForm" (ngSubmit)="register()">
         <mat-form-field class="form-field">

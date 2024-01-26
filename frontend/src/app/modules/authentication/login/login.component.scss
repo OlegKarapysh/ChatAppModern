@@ -1,0 +1,29 @@
+.flex-column-centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    @extend .flex-column-centered;
+    align-self: stretch;
+}
+
+.login-container {
+    @extend .flex-column-centered;
+    height: 100%;
+}
+
+.form-field {
+    width: 70%;
+}
+
+.link {
+    text-decoration: none;
+    color: darkblue;
+    cursor: pointer;
+    &:hover {
+        color: blue;
+    }
+}

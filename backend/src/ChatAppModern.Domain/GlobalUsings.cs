@@ -4,8 +4,12 @@ global using System.Linq.Expressions;
 global using Microsoft.AspNetCore.Identity;
 global using ChatAppModern.Domain.Abstract;
 global using ChatAppModern.Domain.Entities.Attachments;
+global using ChatAppModern.Domain.Attributes;
 global using ChatAppModern.Domain.Entities.Groups;
 global using ChatAppModern.Domain.Entities.Chats;
 global using ChatAppModern.Domain.Repositories;
 global using ChatAppModern.Domain.Enums;
-
+global using ChatAppModern.Domain.Entities;
+global using ChatAppModern.Domain.DTOs.Pages;
+global using ChatAppModern.Domain.DTOs.AssistantFiles;
+global using ChatAppModern.Domain.DTOs.Users;

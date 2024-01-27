@@ -1,1 +1,23 @@
-<p>login works!</p>
+<div class="login-container">
+    <h1>Login</h1>
+    <h3>Don't have an account?
+        <a class="link" routerLink="/auth/register">Register here</a>
+    </h3>
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="login()">
+        <mat-form-field class="form-field">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" placeholder="smth@gmail.com...">
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+            <mat-label>Password</mat-label>
+            <input matInput [type]="isPasswordHidden ? 'password' : 'text'" formControlName="password">
+            <button mat-icon-button matSuffix (click)="isPasswordHidden = !isPasswordHidden"
+                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="isPasswordHidden">
+                <mat-icon>{{isPasswordHidden ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" [disabled]="!loginForm.valid">Login</button>
+    </form>
+</div>

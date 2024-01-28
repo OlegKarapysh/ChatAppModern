@@ -10,7 +10,7 @@ public interface IRepository<T> where T : EntityBase
     Task<List<T>> FindAllAsync(Expression<Func<T, bool>> predicate);
     Task<T?> FindFirstAsync(Expression<Func<T, bool>> predicate);
     Task<T> AddAsync(T entity);
-    Task UpdateAsync(Guid id);
+    ValueTask<T> Update(T entity);
     Task<bool> RemoveAsync(Guid id);
     Task<bool> RemoveRangeAsync(IEnumerable<Guid> entityIds);
 }

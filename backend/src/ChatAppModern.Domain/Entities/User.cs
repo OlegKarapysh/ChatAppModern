@@ -14,6 +14,9 @@ public class User : IdentityUser<Guid>, ICreatableEntity
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public List<Message> Messages { get; set; } = new();
+    public List<DialogChat> DialogChats { get; set; } = new();
+    public List<GroupChat> GroupChats { get; set; } = new();
+    public List<GroupChatMember> GroupChatMembers { get; set; } = new();
     public List<AssistantGroup> OwnGroups { get; set; } = new();
     public List<AssistantGroup> ForeignGroups { get; set; } = new();
     public List<AssistantGroupMember> GroupMembers { get; set; } = new();

@@ -1,4 +1,4 @@
-﻿namespace ChatAppModern.BusinessLogic.RequestExceptions;
+﻿namespace ChatAppModern.BusinessLogic.Extensions;
 
 public static class ExceptionExtensions
 {
@@ -10,4 +10,10 @@ public static class ExceptionExtensions
             _ => (new ErrorDetails(GeneralErrors.Internal, exception.Message), HttpStatusCode.InternalServerError)
         };
     }
+
+    public static Result ToFailedResult(this Exception exception)
+        => Result.Fail(new ExceptionalError(exception))!;
+
+    public static Result<T> ToFailedResult<T>(this Exception exception)
+        => Result.Fail(new ExceptionalError(exception))!.ToResult<T>()!;
 }

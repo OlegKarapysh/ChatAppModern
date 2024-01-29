@@ -10,7 +10,7 @@ public sealed class JwtService : IJwtService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public string CreateAccessToken(int id, string userName, string email)
+    public string CreateAccessToken(Guid id, string userName, string email)
     {
         var identity = GenerateClaimsIdentity(id, userName);
 
@@ -22,7 +22,7 @@ public sealed class JwtService : IJwtService
             new Claim(JwtRegisteredClaimNames.Iat,
                 ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
             identity.FindFirst(IJwtService.IdClaimName),
-            identity.FindFirst(IJwtService.UserNameClaimName)
+            identity.FindFirst(IJwtService.UsernameClaimName)
         };
 
         var jwt = new JwtSecurityToken(
@@ -46,18 +46,13 @@ public sealed class JwtService : IJwtService
         return new RefreshToken(Convert.ToBase64String(salt));
     }
 
-    public int GetIdClaim(ClaimsPrincipal claimsPrincipal)
+    public Result<Guid> GetIdClaim(ClaimsPrincipal claimsPrincipal)
     {
-        var isParsed = int.TryParse(claimsPrincipal.FindFirstValue(IJwtService.IdClaimName), out var id);
-        if (!isParsed)
-        {
-            throw new MissingClaimException(IJwtService.IdClaimName);
-        }
-
-        return id;
+        var isParsed = Guid.TryParse(claimsPrincipal.FindFirstValue(IJwtService.IdClaimName), out var id);
+        return !isParsed ? new MissingClaimException(IJwtService.IdClaimName).ToFailedResult<Guid>() : id;
     }
 
-    public int GetIdClaim(string accessToken)
+    public Result<Guid> GetIdClaim(string accessToken)
     {
         var claimsPrincipal = _jwtSecurityTokenHandler.ValidateToken(accessToken, new TokenValidationParameters
         {
@@ -67,20 +62,17 @@ public sealed class JwtService : IJwtService
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey)),
             ValidateLifetime = false
         }, out _);
-        if (claimsPrincipal is null)
-        {
-            throw new InvalidTokenException("Access");
-        }
-
-        return GetIdClaim(claimsPrincipal);
+        return claimsPrincipal is null
+            ? new InvalidTokenException("Access").ToFailedResult<Guid>()
+            : GetIdClaim(claimsPrincipal);
     }
 
-    private static ClaimsIdentity GenerateClaimsIdentity(int id, string userName)
+    private static ClaimsIdentity GenerateClaimsIdentity(Guid id, string userName)
     {
         return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
         {
             new Claim(IJwtService.IdClaimName, id.ToString()),
-            new Claim(IJwtService.UserNameClaimName, userName)
+            new Claim(IJwtService.UsernameClaimName, userName)
         });
     }
 

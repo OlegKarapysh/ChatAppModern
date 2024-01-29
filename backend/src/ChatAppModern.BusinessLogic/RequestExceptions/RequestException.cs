@@ -10,4 +10,11 @@ public abstract class RequestException : Exception
         ErrorDetails = new ErrorDetails(errorType, message);
         StatusCode = statusCode;
     }
+
+    public static implicit operator Result(RequestException exception) => exception.ToFailedResult();
+
+    public void Deconstruct(out ErrorDetails errorDetails, out HttpStatusCode statusCode)
+    {
+        (errorDetails, statusCode) = (ErrorDetails, StatusCode);
+    }
 }

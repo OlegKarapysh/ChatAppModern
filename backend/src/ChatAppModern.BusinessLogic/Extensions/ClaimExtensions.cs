@@ -2,14 +2,9 @@
 
 public static class ClaimExtensions
 {
-    public static int GetIdClaim(this ClaimsPrincipal claimsPrincipal)
+    public static Result<Guid> GetIdClaim(this ClaimsPrincipal claimsPrincipal)
     {
-        var isParsed = int.TryParse(claimsPrincipal.FindFirstValue(IJwtService.IdClaimName), out var id);
-        if (!isParsed)
-        {
-            throw new MissingClaimException(IJwtService.IdClaimName);
-        }
-
-        return id;
+        var isParsed = Guid.TryParse(claimsPrincipal.FindFirstValue(IJwtService.IdClaimName), out var id);
+        return !isParsed ? new MissingClaimException(IJwtService.IdClaimName).ToFailedResult<Guid>() : id;
     }
 }

@@ -1,5 +1,17 @@
 ﻿global using System.Security.Claims;
 global using System.Linq.Expressions;
 global using System.Reflection;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Security.Cryptography;
+global using System.Security.Principal;
+global using System.Text;
+global using System.Net;
+global using Microsoft.Extensions.Options;
+global using Microsoft.IdentityModel.Tokens;
 global using LinqKit;
+global using ChatAppModern.BusinessLogic.Services.JWT;
 global using ChatAppModern.Domain.Enums;
+global using ChatAppModern.BusinessLogic.JWT;
+global using ChatAppModern.Domain.Entities;
+global using ChatAppModern.Domain.Errors;
+global using ChatAppModern.BusinessLogic.RequestExceptions;

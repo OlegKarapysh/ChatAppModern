@@ -3,6 +3,7 @@
 public class ChatDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
     public const string SqlGetDateFunction = "getutcdate()";
+    public const string SqlNewGuidFunction = "NEWID()";
     
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Attachment> Attachments => Set<Attachment>();

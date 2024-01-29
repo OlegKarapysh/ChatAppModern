@@ -4,6 +4,8 @@ public sealed class GroupChatConfig : IEntityTypeConfiguration<GroupChat>
 {
     public void Configure(EntityTypeBuilder<GroupChat> builder)
     {
+        builder.HasKey(x => x.Id);
+        
         builder.Property(x => x.UpdatedAt)
                .IsRequired()
                .HasDefaultValueSql(ChatDbContext.SqlGetDateFunction)

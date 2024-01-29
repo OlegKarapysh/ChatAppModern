@@ -4,6 +4,8 @@ public sealed class AssistantGroupConfig : IEntityTypeConfiguration<AssistantGro
 {
     public void Configure(EntityTypeBuilder<AssistantGroup> builder)
     {
+        builder.HasKey(x => x.Id);
+        
         builder.HasOne(x => x.Creator)
                .WithMany(x => x.OwnGroups)
                .HasForeignKey(x => x.CreatorId);

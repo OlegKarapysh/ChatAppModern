@@ -4,6 +4,8 @@ public sealed class MessageConfig : IEntityTypeConfiguration<Message>
 {
     public void Configure(EntityTypeBuilder<Message> builder)
     {
+        builder.HasKey(x => x.Id);
+        
         builder.Property(x => x.UpdatedAt)
                .IsRequired()
                .HasDefaultValueSql(ChatDbContext.SqlGetDateFunction)

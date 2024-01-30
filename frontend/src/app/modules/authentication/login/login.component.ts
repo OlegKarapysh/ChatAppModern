@@ -1,8 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { LoginDto } from '../../../models/login-dto';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LoginDto } from '../../../models/auth/login-dto';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../validations/custom-validators';
 import { UnsubscribingComponent } from '../../../shared/components/unsubscribing-component';
+import { AuthService } from '../../../services/auth.service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { ErrorDetails } from '../../../models/auth/errors/error-details';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'chat-login',
@@ -17,7 +23,12 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
 
     public isPasswordHidden = true;
 
-    constructor(private readonly formBuilder: FormBuilder) {
+    constructor(
+        private readonly formBuilder: FormBuilder,
+        private readonly router: Router,
+        private readonly toastService: ToastrService,
+        private readonly authService: AuthService
+    ) {
         super();
     }
 
@@ -50,6 +61,13 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
             password: this.loginForm.value.password,
         };
 
-        console.log(this.loginDto);
+        this.authService
+            .login(this.loginDto)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: () => this.router.navigateByUrl('/'),
+                error: (err: HttpErrorResponse) =>
+                    this.toastService.error((err.error as ErrorDetails).detail),
+            });
     }
 }

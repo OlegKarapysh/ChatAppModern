@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { RegisterDto } from '../../../models/register-dto';
+import { RegisterDto } from '../../../models/auth/register-dto';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../validations/custom-validators';
 import { UnsubscribingComponent } from '../../../shared/components/unsubscribing-component';

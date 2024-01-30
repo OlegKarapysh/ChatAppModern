@@ -11,9 +11,10 @@ public static class WebApplicationExtensions
         }
 
         app.UseHttpsRedirection();
+        app.UseExceptionHandler();
         app.UseCors();
-        // app.UseAuthentication();
-        // app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.MapControllers();
     }
 }

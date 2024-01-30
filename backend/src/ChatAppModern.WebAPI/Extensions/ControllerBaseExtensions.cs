@@ -17,7 +17,7 @@ public static class ControllerBaseExtensions
         if (result.Errors.First() is ExceptionalError { Exception: RequestException requestException })
         {
             var (errorDetails, statusCode) = requestException;
-            return controller.Problem(detail: errorDetails.Message, statusCode: (int)statusCode, type: errorDetails.Type);
+            return controller.Problem(detail: errorDetails.Message, statusCode: (int)statusCode, title: errorDetails.Type);
         }
 
         return controller.Problem(result.Errors.First().Message);

@@ -11,7 +11,7 @@ public sealed class AuthService : IAuthService
         _userManager = userManager;
     }
     
-    public async Task<Result<TokenPairDto>> LoginAsync(LoginDto loginData)
+    public async Task<Result<UserAuthTokensDto>> LoginAsync(LoginDto loginData)
     {
         var user = await _userManager.FindByEmailAsync(loginData.Email);
         if (user is null)
@@ -30,7 +30,7 @@ public sealed class AuthService : IAuthService
         return CreateTokenPair(user);
     }
 
-    public async Task<Result<TokenPairDto>> RegisterAsync(RegistrationDto registerData)
+    public async Task<Result<UserAuthTokensDto>> RegisterAsync(RegistrationDto registerData)
     {
         if (await _userManager.FindByEmailAsync(registerData.Email) is not null)
         {
@@ -75,45 +75,41 @@ public sealed class AuthService : IAuthService
             : Result.Ok()!;
     }
 
-    public async Task<Result<TokenPairDto>> RefreshTokenPairAsync(TokenPairDto tokens)
+    public async Task<Result<UserAuthTokensDto>> RefreshTokenPairAsync(AuthTokensDto tokens)
     {
         var userId = _jwtService.GetIdClaim(tokens.AccessToken);
         if (userId.IsFailed)
         {
             return Result.Fail(userId.Errors!);
         }
-        
         var user = await _userManager.FindByIdAsync(userId.Value.ToString());
         if (user is null)
         {
             return new EntityNotFoundException(nameof(User)).ToFailedResult();
         }
-
         if (user.RefreshToken is null)
         {
-            return new EntityNotFoundException("Refresh token").ToFailedResult();
+            return new EntityNotFoundException(nameof(RefreshToken)).ToFailedResult();
         }
-        
         if (user.TokenExpiresAt <= DateTime.UtcNow)
         {
             return new RefreshTokenExpiredException().ToFailedResult();
         }
-        
         if (tokens.RefreshToken != user.RefreshToken)
         {
-            return new InvalidTokenException("Refresh").ToFailedResult();
+            return new InvalidTokenException(nameof(RefreshToken)).ToFailedResult();
         }
 
         var newRefreshToken = _jwtService.CreateRefreshToken();
         await UpdateUserRefreshTokenAsync(user, newRefreshToken);
-        var newTokens = CreateTokenPair(user, newRefreshToken.Token);
 
-        return newTokens;
+        return CreateTokenPair(user, newRefreshToken.Token);
     }
 
-    private TokenPairDto CreateTokenPair(User user, string? refreshToken = default)
+    private UserAuthTokensDto CreateTokenPair(User user, string? refreshToken = default)
         => new()
         {
+            UserId = user.Id.ToString(),
             AccessToken = _jwtService.CreateAccessToken(user.Id, user.UserName!, user.Email!),
             RefreshToken = refreshToken ?? user.RefreshToken ?? throw new Exception("Refresh token is not set!")
         };

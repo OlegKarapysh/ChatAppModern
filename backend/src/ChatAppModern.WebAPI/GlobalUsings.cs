@@ -1,4 +1,5 @@
 ﻿global using System.Text;
+global using System.Net;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Identity;

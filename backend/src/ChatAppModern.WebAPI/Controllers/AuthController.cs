@@ -13,7 +13,8 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("register"), AllowAnonymous]
-    public async Task<ActionResult<TokenPairDto>> RegisterAsync([FromBody] RegistrationDto registerDto)
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)] // TODO: add all possible response types.
+    public async Task<ActionResult<UserAuthTokensDto>> RegisterAsync([FromBody] RegistrationDto registerDto)
     {
         var registrationResult = await _authService.RegisterAsync(registerDto);
         // TODO: create a method to extract common logic for matching success/error results.
@@ -23,7 +24,7 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("login"), AllowAnonymous]
-    public async Task<ActionResult<TokenPairDto>> LoginAsync([FromBody] LoginDto loginDto)
+    public async Task<ActionResult<UserAuthTokensDto>> LoginAsync([FromBody] LoginDto loginDto)
     {
         var loginResult = await _authService.LoginAsync(loginDto);
         return loginResult.IsFailed

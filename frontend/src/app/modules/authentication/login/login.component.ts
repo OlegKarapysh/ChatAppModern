@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LoginDto } from '../../../models/login-dto';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../validations/custom-validators';
+import { UnsubscribingComponent } from '../../../shared/components/unsubscribing-component';
 
 @Component({
     selector: 'chat-login',
@@ -9,14 +10,16 @@ import { CustomValidators } from '../../../validations/custom-validators';
     styleUrl: './login.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent extends UnsubscribingComponent implements OnInit {
     public loginDto: LoginDto | undefined;
 
     public loginForm: FormGroup = new FormGroup({});
 
     public isPasswordHidden = true;
 
-    constructor(private readonly formBuilder: FormBuilder) {}
+    constructor(private readonly formBuilder: FormBuilder) {
+        super();
+    }
 
     public ngOnInit(): void {
         this.loginForm = this.formBuilder.group({

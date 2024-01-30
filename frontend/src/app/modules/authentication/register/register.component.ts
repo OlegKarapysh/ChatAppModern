@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RegisterDto } from '../../../models/register-dto';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../validations/custom-validators';
+import { UnsubscribingComponent } from '../../../shared/components/unsubscribing-component';
 
 @Component({
     selector: 'chat-register',
@@ -9,7 +10,10 @@ import { CustomValidators } from '../../../validations/custom-validators';
     styleUrl: './register.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent
+    extends UnsubscribingComponent
+    implements OnInit
+{
     public registerDto: RegisterDto | undefined;
 
     public registerForm: FormGroup = new FormGroup({});
@@ -18,7 +22,9 @@ export class RegisterComponent implements OnInit {
 
     public isConfirmPasswordHidden = true;
 
-    constructor(private readonly formBuilder: FormBuilder) {}
+    constructor(private readonly formBuilder: FormBuilder) {
+        super();
+    }
 
     public ngOnInit(): void {
         this.registerForm = this.formBuilder.group({

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoginDto } from '../models/auth/login-dto';
 import { UserAuthTokensDto } from '../models/auth/user-auth-tokens-dto';
 import { Observable, tap } from 'rxjs';
+import { RegisterDto } from '../models/auth/register-dto';
 
 @Injectable({
     providedIn: 'root',
@@ -29,7 +30,19 @@ export class AuthService {
             .pipe(tap(this.handleAuthResponse.bind(this)));
     }
 
-    private handleAuthResponse(userTokens: UserAuthTokensDto) {
+    public register(registerDto: RegisterDto): Observable<UserAuthTokensDto> {
+        return this.httpService
+            .post<UserAuthTokensDto>(`${this.baseUrl}/register`, registerDto)
+            .pipe(tap(this.handleAuthResponse.bind(this)));
+    }
+
+    public logout(): void {
+        this.removeTokens();
+        this.currentUserId = null;
+        this.router.navigateByUrl(`${this.baseUrl}/login`);
+    }
+
+    private handleAuthResponse(userTokens: UserAuthTokensDto): void {
         if (
             userTokens &&
             userTokens.userId &&
@@ -44,8 +57,13 @@ export class AuthService {
         }
     }
 
-    private saveTokens(accessToken: string, refreshToken: string) {
+    private saveTokens(accessToken: string, refreshToken: string): void {
         localStorage.setItem(this.accessTokenKey, accessToken);
         localStorage.setItem(this.refreshTokenKey, refreshToken);
+    }
+
+    private removeTokens(): void {
+        localStorage.removeItem(this.accessTokenKey);
+        localStorage.removeItem(this.refreshTokenKey);
     }
 }

@@ -67,7 +67,9 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
             .subscribe({
                 next: () => this.router.navigateByUrl('/'),
                 error: (err: HttpErrorResponse) =>
-                    this.toastService.error((err.error as ErrorDetails).detail),
+                    this.toastService.error(
+                        (err.error as ErrorDetails).detail ?? err.error.title
+                    ),
             });
     }
 }

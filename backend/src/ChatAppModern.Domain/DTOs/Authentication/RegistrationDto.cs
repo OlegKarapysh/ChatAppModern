@@ -7,5 +7,5 @@ public class RegistrationDto : LoginDto
          ErrorMessage = "Username must be between 3 and 30 characters long!")]
     public string UserName { get; set; } = string.Empty;
     [Compare(nameof(Password), ErrorMessage = "Passwords must match!")]
-    public string RepeatPassword { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

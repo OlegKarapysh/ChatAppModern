@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NotFoundModule } from './modules/not-found/not-found.module';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ToastrModule } from 'ngx-toastr';
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
+import { authErrorInterceptor } from './interceptors/auth-error.interceptor';
 
 @NgModule({
     declarations: [AppComponent],
@@ -18,7 +18,11 @@ import { jwtInterceptor } from './interceptors/jwt.interceptor';
         AppRoutingModule,
         NotFoundModule,
     ],
-    providers: [provideHttpClient(withInterceptors([jwtInterceptor]))],
+    providers: [
+        provideHttpClient(
+            withInterceptors([authErrorInterceptor, jwtInterceptor])
+        ),
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

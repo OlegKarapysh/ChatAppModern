@@ -5,8 +5,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NotFoundModule } from './modules/not-found/not-found.module';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
+import { jwtInterceptor } from './interceptors/jwt.interceptor';
 
 @NgModule({
     declarations: [AppComponent],
@@ -14,11 +15,10 @@ import { ToastrModule } from 'ngx-toastr';
         BrowserModule,
         BrowserAnimationsModule,
         ToastrModule.forRoot(),
-        HttpClientModule,
         AppRoutingModule,
         NotFoundModule,
     ],
-    providers: [],
+    providers: [provideHttpClient(withInterceptors([jwtInterceptor]))],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -7,8 +7,9 @@ import { UnsubscribingComponent } from '../../../shared/components/unsubscribing
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ErrorDetails } from '../../../models/auth/errors/error-details';
+import { ErrorDetails } from '../../../models/errors/error-details';
 import { HttpErrorResponse } from '@angular/common/http';
+import { tap } from 'rxjs';
 
 @Component({
     selector: 'chat-login',
@@ -18,10 +19,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class LoginComponent extends UnsubscribingComponent implements OnInit {
     public loginDto: LoginDto | undefined;
-
     public loginForm: FormGroup = new FormGroup({});
-
     public isPasswordHidden = true;
+    public isSubmitDisabled = false;
 
     constructor(
         private readonly formBuilder: FormBuilder,
@@ -56,6 +56,7 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
     }
 
     public login(): void {
+        this.isSubmitDisabled = true;
         this.loginDto = {
             email: this.loginForm.value.email,
             password: this.loginForm.value.password,
@@ -63,7 +64,10 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
 
         this.authService
             .login(this.loginDto)
-            .pipe(takeUntilDestroyed(this.destroyRef))
+            .pipe(
+                takeUntilDestroyed(this.destroyRef),
+                tap(() => (this.isSubmitDisabled = false))
+            )
             .subscribe({
                 next: () => this.router.navigateByUrl('/'),
                 error: (err: HttpErrorResponse) =>

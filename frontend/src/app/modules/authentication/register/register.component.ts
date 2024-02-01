@@ -7,7 +7,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorDetails } from '../../../models/auth/errors/error-details';
+import { ErrorDetails } from '../../../models/errors/error-details';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({

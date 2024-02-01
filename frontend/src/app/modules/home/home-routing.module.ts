@@ -3,10 +3,29 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home-page/home.component';
 import { TestComponent } from './test-page/test.component';
 import { NotFoundComponent } from '../not-found/not-found.component';
+import { authGuard } from '../../guards/auth.guard';
 
 const routes: Routes = [
-    { path: 'test', title: 'Test', component: TestComponent },
-    { path: '', title: 'Home', pathMatch: 'full', component: HomeComponent },
+    {
+        path: 'test',
+        title: 'Test',
+        component: TestComponent,
+        canActivate: [authGuard],
+    },
+    {
+        path: '',
+        title: 'Home',
+        //pathMatch: 'full',
+        component: HomeComponent,
+        children: [
+            {
+                path: 'chats',
+                canActivate: [authGuard],
+                loadChildren: () =>
+                    import('./chats/chats.module').then((m) => m.ChatsModule),
+            },
+        ],
+    },
     { path: '**', component: NotFoundComponent },
 ];
 

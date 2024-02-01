@@ -1,3 +1,8 @@
 <p>home works!</p>
+@if (isAuth()) {
 <div>hello, {{ getUserId() }}</div>
 <button (click)="logout()">logout</button>
+} @else {
+<div>not authorized</div>
+}
+<router-outlet />

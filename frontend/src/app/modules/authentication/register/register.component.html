@@ -3,7 +3,7 @@
     <h3>Do you already have an account?
         <a class="link" routerLink="/auth/login">Log in here</a>
     </h3>
-    <form class="registration-form" [formGroup]="registerForm" (ngSubmit)="register()">
+    <form class="registration-form" [formGroup]="registerForm">
         <mat-form-field class="form-field">
             <mat-label>Username</mat-label>
             <input matInput type="text" formControlName="username" placeholder="Kate...">
@@ -32,6 +32,8 @@
             </button>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" [disabled]="!registerForm.valid">Register</button>
+        <button mat-raised-button color="primary"
+            [disabled]="!registerForm.valid || (loadingService.isLoading$ | async)"
+            (click)="register()">Register</button>
     </form>
 </div>

@@ -9,7 +9,9 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorDetails } from '../../../models/errors/error-details';
 import { HttpErrorResponse } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { SpinnerService } from '../../../services/spinner.service';
+import { BehaviorSubject } from 'rxjs';
+import { LoadingService } from '../../../services/loading.service';
 
 @Component({
     selector: 'chat-login',
@@ -21,13 +23,14 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
     public loginDto: LoginDto | undefined;
     public loginForm: FormGroup = new FormGroup({});
     public isPasswordHidden = true;
-    public isSubmitDisabled = false;
 
     constructor(
+        public readonly loadingService: LoadingService,
         private readonly formBuilder: FormBuilder,
         private readonly router: Router,
         private readonly toastService: ToastrService,
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly spinner: SpinnerService
     ) {
         super();
     }
@@ -56,7 +59,8 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
     }
 
     public login(): void {
-        this.isSubmitDisabled = true;
+        this.loadingService.startLoading();
+        this.spinner.show();
         this.loginDto = {
             email: this.loginForm.value.email,
             password: this.loginForm.value.password,
@@ -64,16 +68,24 @@ export class LoginComponent extends UnsubscribingComponent implements OnInit {
 
         this.authService
             .login(this.loginDto)
-            .pipe(
-                takeUntilDestroyed(this.destroyRef),
-                tap(() => (this.isSubmitDisabled = false))
-            )
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
-                next: () => this.router.navigateByUrl('/'),
-                error: (err: HttpErrorResponse) =>
+                next: () => {
+                    this.finishLoading();
+                    this.toastService.clear();
+                    this.router.navigateByUrl('/');
+                },
+                error: (err: HttpErrorResponse) => {
+                    this.finishLoading();
                     this.toastService.error(
-                        (err.error as ErrorDetails).detail ?? err.error.title
-                    ),
+                        (err.error as ErrorDetails)?.detail ?? err.error.title
+                    );
+                },
             });
+    }
+
+    private finishLoading(): void {
+        this.loadingService.finishLoading();
+        this.spinner.hide();
     }
 }

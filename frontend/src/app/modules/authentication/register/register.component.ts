@@ -9,6 +9,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorDetails } from '../../../models/errors/error-details';
 import { ToastrService } from 'ngx-toastr';
+import { LoadingService } from '../../../services/loading.service';
+import { SpinnerService } from '../../../services/spinner.service';
 
 @Component({
     selector: 'chat-register',
@@ -26,10 +28,12 @@ export class RegisterComponent
     public isConfirmPasswordHidden = true;
 
     constructor(
+        public readonly loadingService: LoadingService,
         private readonly formBuilder: FormBuilder,
         private readonly authService: AuthService,
         private readonly router: Router,
-        private readonly toastService: ToastrService
+        private readonly toastService: ToastrService,
+        private readonly spinner: SpinnerService
     ) {
         super();
     }
@@ -70,6 +74,8 @@ export class RegisterComponent
     }
 
     public register(): void {
+        this.loadingService.startLoading();
+        this.spinner.show();
         this.registerDto = {
             username: this.registerForm.value.username,
             email: this.registerForm.value.email,
@@ -81,11 +87,22 @@ export class RegisterComponent
             .register(this.registerDto)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
-                next: () => this.router.navigateByUrl('/'),
-                error: (err: HttpErrorResponse) =>
+                next: () => {
+                    this.finishLoading();
+                    this.toastService.clear();
+                    this.router.navigateByUrl('/');
+                },
+                error: (err: HttpErrorResponse) => {
+                    this.finishLoading();
                     this.toastService.error(
-                        (err.error as ErrorDetails).detail ?? err.error.title
-                    ),
+                        (err.error as ErrorDetails)?.detail ?? err.error.title
+                    );
+                },
             });
+    }
+
+    private finishLoading(): void {
+        this.loadingService.finishLoading();
+        this.spinner.hide();
     }
 }

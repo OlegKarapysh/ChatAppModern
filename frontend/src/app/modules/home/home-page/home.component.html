@@ -1,9 +1,16 @@
-<p>home works!</p>
-@if (isAuth()) {
-<div>hello, {{ getUserId() }}</div>
-<button (click)="logout()">logout</button>
-} @else {
-<div>not authorized</div>
-<a routerLink="/auth/login">login here</a>
-}
-<router-outlet />
+<mat-sidenav-container>
+    <mat-sidenav>
+        <div>nav</div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <p>home works!</p>
+        @if (isAuth() | async) {
+        <div>hello, {{ getUserId() }}</div>
+        <button (click)="logout()">logout</button>
+        } @else {
+        <div>not authorized</div>
+        <a routerLink="/auth/login">login here</a>
+        }
+        <router-outlet />
+    </mat-sidenav-content>
+</mat-sidenav-container>

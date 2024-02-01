@@ -31,4 +31,13 @@ public sealed class AuthController : ControllerBase
             ? this.ProblemFromFailedResult(loginResult)
             : Ok(loginResult.Value);
     }
+
+    [HttpPost("refresh"), AllowAnonymous]
+    public async Task<ActionResult<UserAuthTokensDto>> RefreshTokensAsync([FromBody] AuthTokensDto tokens)
+    {
+        var refreshResult = await _authService.RefreshTokenPairAsync(tokens);
+        return refreshResult.IsFailed
+            ? this.ProblemFromFailedResult(refreshResult)
+            : Ok(refreshResult.Value);
+    }
 }

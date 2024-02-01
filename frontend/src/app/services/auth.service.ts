@@ -3,16 +3,17 @@ import { HttpService } from './http.service';
 import { Router } from '@angular/router';
 import { LoginDto } from '../models/auth/login-dto';
 import { UserAuthTokensDto } from '../models/auth/user-auth-tokens-dto';
-import { Observable, shareReplay, tap } from 'rxjs';
+import { Observable, catchError, map, of, shareReplay, tap } from 'rxjs';
 import { RegisterDto } from '../models/auth/register-dto';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
 import { JwtAuthPayload } from '../models/auth/jwt-auth-payload';
+import { AuthTokensDto } from '../models/auth/auth-tokens-dto';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly baseUrl = '/auth';
+    private readonly authPath = '/auth';
     private readonly accessTokenKey = 'accessToken';
     private readonly refreshTokenKey = 'refreshToken';
 
@@ -23,43 +24,62 @@ export class AuthService {
 
     public getCurrentUserId(): string | null {
         const accessToken = this.getAccessToken();
-        if (!accessToken) {
-            return null;
-        }
-
-        const jwt = jwtDecode(accessToken);
-        if (!this.checkJwtNotExpired(jwt)) {
-            this.logout();
-            return null;
-        }
-
-        return (jwt as JwtAuthPayload).id;
+        return !accessToken
+            ? null
+            : (jwtDecode(accessToken) as JwtAuthPayload).id;
     }
 
-    public checkAuthenticated(): boolean {
+    public checkAuthenticated(): Observable<boolean> {
         const accessToken = this.getAccessToken();
         if (!accessToken || !this.getRefreshToken()) {
-            return false;
+            return of(false);
         }
 
-        return this.checkJwtNotExpired(jwtDecode(accessToken));
+        if (this.checkJwtNotExpired(jwtDecode(accessToken))) {
+            return of(true);
+        }
+
+        return this.refreshTokens().pipe(
+            catchError(() =>
+                of({
+                    userId: '',
+                    accessToken: '',
+                    refreshToken: '',
+                })
+            ),
+            map(
+                (tokens: UserAuthTokensDto) =>
+                    !!(tokens && tokens.accessToken && tokens.refreshToken)
+            )
+        );
     }
 
     public login(loginDto: LoginDto): Observable<UserAuthTokensDto> {
         return this.httpService
-            .post<UserAuthTokensDto>(`${this.baseUrl}/login`, loginDto)
+            .post<UserAuthTokensDto>(`${this.authPath}/login`, loginDto)
             .pipe(shareReplay(), tap(this.handleAuthResponse.bind(this)));
     }
 
     public register(registerDto: RegisterDto): Observable<UserAuthTokensDto> {
         return this.httpService
-            .post<UserAuthTokensDto>(`${this.baseUrl}/register`, registerDto)
+            .post<UserAuthTokensDto>(`${this.authPath}/register`, registerDto)
             .pipe(shareReplay(), tap(this.handleAuthResponse.bind(this)));
     }
 
     public logout(): void {
         this.removeTokens();
-        this.router.navigateByUrl(`${this.baseUrl}/login`);
+        this.router.navigateByUrl(`${this.authPath}/login`);
+    }
+
+    public refreshTokens(): Observable<UserAuthTokensDto> {
+        const tokensDto: AuthTokensDto = {
+            accessToken: this.getAccessToken() ?? '',
+            refreshToken: this.getRefreshToken() ?? '',
+        };
+
+        return this.httpService
+            .post<UserAuthTokensDto>(`${this.authPath}/refresh`, tokensDto)
+            .pipe(tap(this.handleAuthResponse.bind(this)));
     }
 
     public getAccessToken(): string | null {

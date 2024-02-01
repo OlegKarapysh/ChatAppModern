@@ -1,5 +1,5 @@
-export type UserAuthTokensDto = {
+import { AuthTokensDto } from './auth-tokens-dto';
+
+export type UserAuthTokensDto = AuthTokensDto & {
     userId: string;
-    accessToken: string;
-    refreshToken: string;
 };

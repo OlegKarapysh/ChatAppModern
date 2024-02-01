@@ -13,7 +13,7 @@ export class HomeComponent {
         return this.authService.checkAuthenticated();
     }
     getUserId() {
-        return this.authService.currentUserId;
+        return this.authService.getCurrentUserId();
     }
     logout() {
         this.authService.logout();

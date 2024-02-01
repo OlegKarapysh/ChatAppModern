@@ -6,12 +6,12 @@ import { UserAuthTokensDto } from '../models/auth/user-auth-tokens-dto';
 import { Observable, shareReplay, tap } from 'rxjs';
 import { RegisterDto } from '../models/auth/register-dto';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
+import { JwtAuthPayload } from '../models/auth/jwt-auth-payload';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    public currentUserId: string | null = null;
     private readonly baseUrl = '/auth';
     private readonly accessTokenKey = 'accessToken';
     private readonly refreshTokenKey = 'refreshToken';
@@ -21,13 +21,28 @@ export class AuthService {
         private readonly router: Router
     ) {}
 
+    public getCurrentUserId(): string | null {
+        const accessToken = this.getAccessToken();
+        if (!accessToken) {
+            return null;
+        }
+
+        const jwt = jwtDecode(accessToken);
+        if (!this.checkJwtNotExpired(jwt)) {
+            this.logout();
+            return null;
+        }
+
+        return (jwt as JwtAuthPayload).id;
+    }
+
     public checkAuthenticated(): boolean {
         const accessToken = this.getAccessToken();
         if (!accessToken || !this.getRefreshToken()) {
             return false;
         }
 
-        return this.checkJwtNotExpired(accessToken);
+        return this.checkJwtNotExpired(jwtDecode(accessToken));
     }
 
     public login(loginDto: LoginDto): Observable<UserAuthTokensDto> {
@@ -44,8 +59,15 @@ export class AuthService {
 
     public logout(): void {
         this.removeTokens();
-        this.currentUserId = null;
         this.router.navigateByUrl(`${this.baseUrl}/login`);
+    }
+
+    public getAccessToken(): string | null {
+        return localStorage.getItem(this.accessTokenKey);
+    }
+
+    private getRefreshToken(): string | null {
+        return localStorage.getItem(this.refreshTokenKey);
     }
 
     private handleAuthResponse(userTokens: UserAuthTokensDto): void {
@@ -56,7 +78,6 @@ export class AuthService {
             userTokens.refreshToken
         ) {
             this.saveTokens(userTokens.accessToken, userTokens.refreshToken);
-            this.currentUserId = userTokens.userId;
         } else {
             console.log('error while handling auth response:');
             console.log(userTokens);
@@ -73,16 +94,7 @@ export class AuthService {
         localStorage.removeItem(this.refreshTokenKey);
     }
 
-    private getAccessToken(): string | null {
-        return localStorage.getItem(this.accessTokenKey);
-    }
-
-    private getRefreshToken(): string | null {
-        return localStorage.getItem(this.refreshTokenKey);
-    }
-
-    private checkJwtNotExpired(accessToken: string): boolean {
-        const jwt: JwtPayload = jwtDecode(accessToken);
+    private checkJwtNotExpired(jwt: JwtPayload): boolean {
         if (!jwt.exp) {
             return false;
         }

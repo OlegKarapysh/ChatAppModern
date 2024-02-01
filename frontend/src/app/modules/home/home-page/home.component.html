@@ -4,5 +4,6 @@
 <button (click)="logout()">logout</button>
 } @else {
 <div>not authorized</div>
+<a routerLink="/auth/login">login here</a>
 }
 <router-outlet />

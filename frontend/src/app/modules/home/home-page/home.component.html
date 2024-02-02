@@ -1,16 +1,43 @@
-<mat-sidenav-container>
-    <mat-sidenav>
-        <div>nav</div>
-    </mat-sidenav>
-    <mat-sidenav-content>
-        <p>home works!</p>
-        @if (isAuth() | async) {
-        <div>hello, {{ getUserId() }}</div>
-        <button (click)="logout()">logout</button>
-        } @else {
-        <div>not authorized</div>
-        <a routerLink="/auth/login">login here</a>
-        }
-        <router-outlet />
-    </mat-sidenav-content>
-</mat-sidenav-container>
+<div class="main-container">
+    <mat-toolbar class="app-header" color="primary">
+        <button mat-icon-button (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+        </button>
+
+        <h1>Chat App</h1>
+
+        <div class="login-logout-links">
+            @if (isAuth() | async) {
+            <button (click)="logout()">logout</button>
+            } @else {
+            <button routerLink="/auth/login">login here</button>
+            }
+        </div>
+    </mat-toolbar>
+
+    <mat-sidenav-container class="body-container">
+        <mat-sidenav class="side-navigation" #sidenav mode="side" opened="true">
+            <mat-list>
+                <mat-list-item class="nav-item" routerLink="chats/dialogs" routerLinkActive="nav-active">
+                    <mat-icon class="nav-icon">message</mat-icon>
+                    <span class="nav-name">Dialog chats</span>
+                </mat-list-item>
+
+                <mat-list-item class="nav-item" routerLink="chats/groups" routerLinkActive="nav-active">
+                    <mat-icon class="nav-icon">group</mat-icon>
+                    <span class="nav-name">Group chats</span>
+                </mat-list-item>
+            </mat-list>
+        </mat-sidenav>
+        <mat-sidenav-content class="content-container">
+            <p>home works!</p>
+            @if (isAuth() | async) {
+            <div>hello, {{ getUserId() }}</div>
+            } @else {
+            <div>not authorized</div>
+            }
+            <router-outlet />
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+
+</div>

@@ -1,0 +1,64 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    min-height: 100%;
+}
+
+.app-header {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    position: sticky;
+    gap: 15px;
+    padding: 10px 20px;
+}
+
+.login-logout-links {
+    display: flex;
+    justify-content: end;
+}
+
+.body-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    border: solid black 5px;
+}
+
+.side-navigation {
+    display: block;
+    min-width: 175px;
+    max-width: 200px;
+    border: solid red 3px;
+}
+
+.content-container {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    border: solid green 3px;
+}
+
+.nav-item {
+    text-decoration: none;
+    text-align: top;
+    align-items: center;
+    font-size: large;
+    &:hover {
+        color: darkblue;
+        cursor: pointer;
+        background-color: gray;
+    }
+}
+
+.nav-active {
+    background-color: lightgray;
+}
+
+.nav-name {
+    text-align: center;
+}

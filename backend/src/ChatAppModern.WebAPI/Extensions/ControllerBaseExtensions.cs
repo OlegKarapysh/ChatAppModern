@@ -27,5 +27,11 @@ public static class ControllerBaseExtensions
     {
         return controller.ProblemFromFailedResult(result.ToResult()!);
     }
-    
+
+    public static ObjectResult OkObjectResultOrProblem<T>(this ControllerBase controller, Result<T> result)
+    {
+        return result.IsFailed
+            ? controller.ProblemFromFailedResult(result)
+            : controller.Ok(result.Value);
+    }
 }

@@ -17,11 +17,8 @@ public sealed class AuthController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<UserAuthTokensDto>> RegisterAsync([FromBody] RegistrationDto registerDto)
     {
-        var registrationResult = await _authService.RegisterAsync(registerDto);
-        // TODO: create a method to extract common logic for matching success/error results.
-        return registrationResult.IsFailed
-            ? this.ProblemFromFailedResult(registrationResult)
-            : Ok(registrationResult.Value); // TODO: replace with CreatedAtAction().
+        // TODO: replace with CreatedAtAction().
+        return this.OkObjectResultOrProblem(await _authService.RegisterAsync(registerDto));
     }
 
     [HttpPost("login"), AllowAnonymous]
@@ -29,10 +26,7 @@ public sealed class AuthController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<UserAuthTokensDto>> LoginAsync([FromBody] LoginDto loginDto)
     {
-        var loginResult = await _authService.LoginAsync(loginDto);
-        return loginResult.IsFailed
-            ? this.ProblemFromFailedResult(loginResult)
-            : Ok(loginResult.Value);
+        return this.OkObjectResultOrProblem(await _authService.LoginAsync(loginDto));
     }
 
     [HttpPost("refresh"), AllowAnonymous]
@@ -42,9 +36,6 @@ public sealed class AuthController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<UserAuthTokensDto>> RefreshTokensAsync([FromBody] AuthTokensDto tokens)
     {
-        var refreshResult = await _authService.RefreshTokenPairAsync(tokens);
-        return refreshResult.IsFailed
-            ? this.ProblemFromFailedResult(refreshResult)
-            : Ok(refreshResult.Value);
+        return this.OkObjectResultOrProblem(await _authService.RefreshTokenPairAsync(tokens));
     }
 }

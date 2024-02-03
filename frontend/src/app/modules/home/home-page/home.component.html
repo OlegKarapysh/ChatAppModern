@@ -1,10 +1,14 @@
 <div class="main-container">
     <mat-toolbar class="app-header" color="primary">
-        <button mat-icon-button (click)="sidenav.toggle()">
-            <mat-icon>menu</mat-icon>
-        </button>
+        <div class="flex-row">
+            <button mat-icon-button (click)="sidenav.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
 
-        <h1>Chat App</h1>
+            <h1>Chat App</h1>
+        </div>
+
+        <div></div>
 
         <div class="login-logout-links">
             @if (isAuth() | async) {
@@ -17,7 +21,7 @@
 
     <mat-sidenav-container class="body-container">
         <mat-sidenav class="side-navigation" #sidenav mode="side" opened="true">
-            <mat-list>
+            <mat-list class="nav-list">
                 <mat-list-item class="nav-item" routerLink="chats/dialogs" routerLinkActive="nav-active">
                     <mat-icon class="nav-icon">message</mat-icon>
                     <span class="nav-name">Dialog chats</span>

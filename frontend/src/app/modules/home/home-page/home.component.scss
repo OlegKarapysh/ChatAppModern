@@ -2,17 +2,23 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-width: 100%;
     height: 100%;
+    min-width: 100%;
     min-height: 100%;
 }
 
 .app-header {
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
+    grid-template-columns: 180px 1fr 1fr;
     position: sticky;
     gap: 15px;
     padding: 10px 20px;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
 }
 
 .login-logout-links {
@@ -25,14 +31,10 @@
     flex-direction: row;
     width: 100%;
     height: 100%;
-    border: solid black 5px;
 }
 
 .side-navigation {
-    display: block;
-    min-width: 175px;
-    max-width: 200px;
-    border: solid red 3px;
+    min-width: 200px;
 }
 
 .content-container {
@@ -40,13 +42,14 @@
     width: 100%;
     height: 100%;
     overflow-y: auto;
-    border: solid green 3px;
+}
+
+.nav-list {
+    padding: 0;
 }
 
 .nav-item {
     text-decoration: none;
-    text-align: top;
-    align-items: center;
     font-size: large;
     &:hover {
         color: darkblue;
@@ -57,6 +60,11 @@
 
 .nav-active {
     background-color: lightgray;
+}
+
+.nav-icon {
+    vertical-align: bottom;
+    margin-right: 5px;
 }
 
 .nav-name {

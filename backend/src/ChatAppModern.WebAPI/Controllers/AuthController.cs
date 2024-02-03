@@ -4,12 +4,10 @@
 public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IJwtService _jwtService;
 
-    public AuthController(IAuthService authService, IJwtService jwtService)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _jwtService = jwtService;
     }
 
     [HttpPost("register"), AllowAnonymous]

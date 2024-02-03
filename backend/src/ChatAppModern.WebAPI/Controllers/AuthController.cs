@@ -13,7 +13,8 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("register"), AllowAnonymous]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)] // TODO: add all possible response types.
+    [ProducesResponseType<UserAuthTokensDto>((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<UserAuthTokensDto>> RegisterAsync([FromBody] RegistrationDto registerDto)
     {
         var registrationResult = await _authService.RegisterAsync(registerDto);
@@ -24,6 +25,8 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("login"), AllowAnonymous]
+    [ProducesResponseType<UserAuthTokensDto>((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<UserAuthTokensDto>> LoginAsync([FromBody] LoginDto loginDto)
     {
         var loginResult = await _authService.LoginAsync(loginDto);
@@ -33,6 +36,10 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("refresh"), AllowAnonymous]
+    [ProducesResponseType<UserAuthTokensDto>((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<UserAuthTokensDto>> RefreshTokensAsync([FromBody] AuthTokensDto tokens)
     {
         var refreshResult = await _authService.RefreshTokenPairAsync(tokens);

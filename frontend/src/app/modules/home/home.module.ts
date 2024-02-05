@@ -10,9 +10,10 @@ import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home-page/home.component';
 import { TestComponent } from './test-page/test.component';
 import { NavigationMenuComponent } from './home-page/navigation-menu/navigation-menu.component';
+import { AppHeaderComponent } from './home-page/app-header/app-header.component';
 
 @NgModule({
-    declarations: [HomeComponent, TestComponent, NavigationMenuComponent],
+    declarations: [HomeComponent, TestComponent, NavigationMenuComponent, AppHeaderComponent],
     imports: [
         CommonModule,
         HomeRoutingModule,

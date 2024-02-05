@@ -1,33 +1,5 @@
 <div class="main-container">
-    <mat-toolbar class="app-header" color="primary">
-        <div class="app-name-sector">
-            <button mat-icon-button (click)="sidenav.toggle()">
-                <mat-icon>menu</mat-icon>
-            </button>
-
-            <h1>Chat App</h1>
-        </div>
-
-        <div></div>
-
-        <div class="profile-sector">
-            @if (isAuthenticated() | async) {
-            <div class="username">{{ getUserId() }}</div>
-            <img class="avatar" [cdkMenuTriggerFor]="avatarMenu"
-                src="https://img.freepik.com/premium-vector/woman-avatar-profile-round-icon_24640-14042.jpg">
-            <ng-template #avatarMenu>
-                <div class="menu" cdkMenu>
-                    <button class="menu-item" cdkMenuItem>Profile</button>
-                    <button class="menu-item" cdkMenuItem (click)="logout()">Logout</button>
-                    <button class="menu-item" cdkMenuItem>Change password</button>
-                </div>
-            </ng-template>
-            } @else {
-            <button mat-button routerLink="/auth/login">Login</button>
-            <button mat-button routerLink="/auth/register">Register</button>
-            }
-        </div>
-    </mat-toolbar>
+    <chat-app-header [sidenav]="sidenav"></chat-app-header>
 
     <mat-sidenav-container class="body-container">
         <mat-sidenav class="side-navigation" #sidenav mode="side" opened="true">

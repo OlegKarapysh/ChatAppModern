@@ -1,6 +1,6 @@
 <mat-toolbar class="app-header" color="primary">
     <div class="app-name-sector">
-        <button mat-icon-button (click)="sidenav?.toggle()">
+        <button mat-icon-button [disabled]="!(isAuthenticated() | async)" (click)="sidenav?.toggle()">
             <mat-icon>menu</mat-icon>
         </button>
 

@@ -2,12 +2,22 @@
     <chat-app-header [sidenav]="sidenav"></chat-app-header>
 
     <mat-sidenav-container class="body-container">
-        <mat-sidenav class="side-navigation" #sidenav mode="side" opened="true">
+        <mat-sidenav class="side-navigation" #sidenav mode="side" [opened]="true && isAuthenticated() | async">
+            @if (isAuthenticated() | async) {
             <chat-navigation-menu></chat-navigation-menu>
+            }
         </mat-sidenav>
 
         <mat-sidenav-content class="content-container">
+            @if (isAuthenticated() | async) {
             <router-outlet />
+            } @else {
+            <div class="no-auth-info">
+                <p>Welcome to Chat App!</p>
+                <p>Here you can chat with other people.</p>
+                <p>In order to use this app you need to login or register.</p>
+            </div>
+            }
         </mat-sidenav-content>
     </mat-sidenav-container>
 </div>

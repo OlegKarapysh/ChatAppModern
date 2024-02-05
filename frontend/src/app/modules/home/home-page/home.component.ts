@@ -13,12 +13,4 @@ export class HomeComponent {
     public isAuthenticated() {
         return this.authService.checkAuthenticated();
     }
-
-    public logout() {
-        this.authService.logout();
-    }
-
-    getUserId() {
-        return this.authService.getCurrentUserId();
-    }
 }

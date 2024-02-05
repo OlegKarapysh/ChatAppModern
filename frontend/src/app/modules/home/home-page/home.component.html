@@ -31,25 +31,10 @@
 
     <mat-sidenav-container class="body-container">
         <mat-sidenav class="side-navigation" #sidenav mode="side" opened="true">
-            <mat-list class="nav-list">
-                <mat-list-item class="nav-item" routerLink="chats/dialogs" routerLinkActive="nav-active">
-                    <mat-icon class="nav-icon">message</mat-icon>
-                    <span class="nav-name">Dialog chats</span>
-                </mat-list-item>
-
-                <mat-list-item class="nav-item" routerLink="chats/groups" routerLinkActive="nav-active">
-                    <mat-icon class="nav-icon">group</mat-icon>
-                    <span class="nav-name">Group chats</span>
-                </mat-list-item>
-            </mat-list>
+            <chat-navigation-menu></chat-navigation-menu>
         </mat-sidenav>
+
         <mat-sidenav-content class="content-container">
-            <p>home works!</p>
-            @if (isAuthenticated() | async) {
-            <div>hello, {{ getUserId() }}</div>
-            } @else {
-            <div>not authorized</div>
-            }
             <router-outlet />
         </mat-sidenav-content>
     </mat-sidenav-container>

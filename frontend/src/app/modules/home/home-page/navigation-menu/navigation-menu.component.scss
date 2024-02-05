@@ -1,0 +1,26 @@
+.nav-list {
+    padding: 0;
+}
+
+.nav-item {
+    text-decoration: none;
+    font-size: large;
+    &:hover {
+        color: darkblue;
+        cursor: pointer;
+        background-color: gainsboro;
+    }
+}
+
+.nav-active {
+    background-color: lightgray;
+}
+
+.nav-icon {
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+
+.nav-name {
+    text-align: center;
+}

@@ -1,1 +1,11 @@
-<p>navigation-menu works!</p>
+<mat-list class="nav-list">
+    <mat-list-item class="nav-item" routerLink="chats/dialogs" routerLinkActive="nav-active">
+        <mat-icon class="nav-icon">message</mat-icon>
+        <span class="nav-name">Dialog chats</span>
+    </mat-list-item>
+
+    <mat-list-item class="nav-item" routerLink="chats/groups" routerLinkActive="nav-active">
+        <mat-icon class="nav-icon">group</mat-icon>
+        <span class="nav-name">Group chats</span>
+    </mat-list-item>
+</mat-list>

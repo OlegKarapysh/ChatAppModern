@@ -1,6 +1,6 @@
 <div class="main-container">
     <mat-toolbar class="app-header" color="primary">
-        <div class="flex-row">
+        <div class="app-name-sector">
             <button mat-icon-button (click)="sidenav.toggle()">
                 <mat-icon>menu</mat-icon>
             </button>
@@ -10,11 +10,21 @@
 
         <div></div>
 
-        <div class="login-logout-links">
-            @if (isAuth() | async) {
-            <button (click)="logout()">logout</button>
+        <div class="profile-sector">
+            @if (isAuthenticated() | async) {
+            <div class="username">{{ getUserId() }}</div>
+            <img class="avatar" [cdkMenuTriggerFor]="avatarMenu"
+                src="https://img.freepik.com/premium-vector/woman-avatar-profile-round-icon_24640-14042.jpg">
+            <ng-template #avatarMenu>
+                <div class="menu" cdkMenu>
+                    <button class="menu-item" cdkMenuItem>Profile</button>
+                    <button class="menu-item" cdkMenuItem (click)="logout()">Logout</button>
+                    <button class="menu-item" cdkMenuItem>Change password</button>
+                </div>
+            </ng-template>
             } @else {
-            <button routerLink="/auth/login">login here</button>
+            <button mat-button routerLink="/auth/login">Login</button>
+            <button mat-button routerLink="/auth/register">Register</button>
             }
         </div>
     </mat-toolbar>
@@ -35,7 +45,7 @@
         </mat-sidenav>
         <mat-sidenav-content class="content-container">
             <p>home works!</p>
-            @if (isAuth() | async) {
+            @if (isAuthenticated() | async) {
             <div>hello, {{ getUserId() }}</div>
             } @else {
             <div>not authorized</div>
@@ -43,5 +53,4 @@
             <router-outlet />
         </mat-sidenav-content>
     </mat-sidenav-container>
-
 </div>

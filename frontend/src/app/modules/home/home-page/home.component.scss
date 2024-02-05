@@ -15,15 +15,51 @@
     padding: 10px 20px;
 }
 
-.flex-row {
+.app-name-sector {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 15px;
 }
 
-.login-logout-links {
+.profile-sector {
     display: flex;
     justify-content: end;
+    gap: 10px;
+}
+
+.avatar {
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+}
+
+.menu {
+    display: inline-flex;
+    flex-direction: column;
+    user-select: none;
+    min-width: 180px;
+    max-width: 280px;
+    background-color: white;
+}
+
+.menu-item {
+    display: inline;
+    background-color: transparent;
+    cursor: pointer;
+    border: none;
+    user-select: none;
+    min-width: 40px;
+    min-height: 30px;
+    &:hover {
+        background-color: lightgray;
+    }
+}
+
+.username {
+    display: flex;
+    align-items: center;
 }
 
 .body-container {
@@ -54,7 +90,7 @@
     &:hover {
         color: darkblue;
         cursor: pointer;
-        background-color: gray;
+        background-color: gainsboro;
     }
 }
 

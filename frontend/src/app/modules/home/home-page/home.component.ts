@@ -9,13 +9,16 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class HomeComponent {
     constructor(private readonly authService: AuthService) {}
-    isAuth() {
+
+    public isAuthenticated() {
         return this.authService.checkAuthenticated();
     }
+
+    public logout() {
+        this.authService.logout();
+    }
+
     getUserId() {
         return this.authService.getCurrentUserId();
-    }
-    logout() {
-        this.authService.logout();
     }
 }

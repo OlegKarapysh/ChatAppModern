@@ -4,6 +4,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { CdkMenuModule } from '@angular/cdk/menu';
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home-page/home.component';
 import { TestComponent } from './test-page/test.component';
@@ -18,6 +20,8 @@ import { NavigationMenuComponent } from './home-page/navigation-menu/navigation-
         MatToolbarModule,
         MatIconModule,
         MatListModule,
+        MatButtonModule,
+        CdkMenuModule,
     ],
 })
 export class HomeModule {}

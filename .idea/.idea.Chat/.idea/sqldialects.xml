@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetRoleClaims.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetRoles.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetUserClaims.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetUserLogins.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetUserRoles.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetUserTokens.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AspNetUsers.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/AssistantFiles.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/Attachments.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/ConversationParticipants.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/Conversations.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/GroupMembers.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/Groups.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/src/Infrastructure/Chat.Database/dbo/Tables/Messages.sql" dialect="TSQL" />
+  </component>
+</project>

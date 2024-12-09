@@ -1,0 +1,294 @@
+﻿@page "/chat/{ConversationId}/{ConversationTitle}/{ConversationType}"
+
+@attribute [Authorize]
+
+@implements IDisposable
+
+@inject IVideoCallSignallingService VideoCallSignallingService
+@inject IChatSignallingService ChatSignallingService
+@inject ISignallingConnectionService SignallingConnectionService
+@inject IMessagesWebApiService MessageService
+@inject IUsersWebApiService UserService
+@inject IConversationsWebApiService ConversationService
+@inject IToastService ToastService
+@inject NavigationManager Navigation
+@inject SpinnerService Spinner
+
+<PageTitle>Chat</PageTitle>
+
+<RadzenCard Style="margin: 10px">
+    <h3>@ConversationTitle</h3>
+    <LinkComponent Path="@ChatsPage.Path" Text=" Go back to all chats"></LinkComponent>
+    @if (Enum.Parse<ConversationType>(ConversationType) == Domain.Entities.Conversations.ConversationType.Group)
+    {
+        <div style="margin: 10px">
+            <RadzenTextBox @bind-Value="UserName" Placeholder="Enter username..."></RadzenTextBox>
+            <RadzenButton Click="async () => await AddUserToGroupAsync()" 
+                          Disabled="@(string.IsNullOrWhiteSpace(UserName))">
+                Add user to group
+            </RadzenButton>
+        </div>
+    }
+    @if (Enum.Parse<ConversationType>(ConversationType) == Domain.Entities.Conversations.ConversationType.Dialog)
+    {
+        <div style="margin: 10px">
+            <RadzenButton Click="async () => await CallUserAsync(CancellationSource.Token)">
+                Video call
+            </RadzenButton>
+        </div>
+    }
+    <div style="margin: 10px; display: flex; flex-direction: column; gap: 5px; overflow: auto; max-height: 90%">
+        @foreach (var message in Messages)
+        {
+            <RadzenCard>
+                <div class="message-container">
+                    <RadzenText>
+                        <strong>@(message.UserName): </strong> @message.TextContent
+                    </RadzenText>
+                    <div class="message-buttons-container">
+                        <RadzenButton Style="@MessageButtonStyle" ButtonStyle="ButtonStyle.Danger" 
+                                      Click="async () => await DeleteMessageAsync(message)">
+                            Delete
+                        </RadzenButton>
+                        @if (CurrentUser.UserName == message.UserName)
+                        {
+                            <RadzenButton Style="@MessageButtonStyle" ButtonStyle="ButtonStyle.Secondary"
+                                          Disabled="@(string.IsNullOrWhiteSpace(MessageText))"
+                                          Click="async () => await UpdateMessageAsync(message)">
+                                Update
+                            </RadzenButton>
+                        }
+                    </div>
+                </div>
+            </RadzenCard>
+        }
+    </div>
+    <div class="send-message-container">
+        <RadzenTextBox @bind-Value="MessageText" Placeholder="Message... "></RadzenTextBox>
+        <RadzenButton Style="@MessageButtonStyle" ButtonStyle="ButtonStyle.Primary" 
+                      Click="SendMessageAsync" disabled="@(string.IsNullOrWhiteSpace(MessageText))">
+            Send
+        </RadzenButton>
+    </div>
+</RadzenCard>
+
+@code 
+{
+    public const string Path = "/chat";
+    public const string MessageButtonStyle = "width: 90px";
+
+    [Parameter]
+    public string ConversationTitle { get; set; } = string.Empty;
+    [Parameter]
+    public string ConversationId { get; set; } = string.Empty;
+    [Parameter]
+    public string ConversationType { get; set; } = string.Empty;
+    public string MessageText { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public bool IsAiAssisted { get; set; }
+    public List<MessageWithSenderDto> Messages { get; } = new();
+    public UserDto CurrentUser { get; set; } = new();
+    public CancellationTokenSource CancellationSource { get; set; } = new();
+    public bool IsCalling { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SignallingConnectionService!.ReceivedMessage += AddMessage;
+        SignallingConnectionService.UpdatedMessage += UpdateMessage;
+        SignallingConnectionService.DeletedMessage += DeleteMessage;
+        SignallingConnectionService.ReceivedCallAnswer += ReceiveCallAnswer;
+        var messagesResponse = await MessageService!.GetAllConversationMessagesAsync(int.Parse(ConversationId));
+        if (messagesResponse.IsSuccessful)
+        {
+            Messages.AddRange(messagesResponse.Content!);
+        }
+
+        var currentUserResponse = await UserService!.GetCurrentUserInfoAsync();
+        if (currentUserResponse.IsSuccessful)
+        {
+            CurrentUser = currentUserResponse.Content!;
+        }
+        
+        await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        SignallingConnectionService!.ReceivedMessage -= AddMessage;
+        SignallingConnectionService.UpdatedMessage -= UpdateMessage;
+        SignallingConnectionService.DeletedMessage -= DeleteMessage;
+        SignallingConnectionService.ReceivedCallAnswer -= ReceiveCallAnswer;
+    }
+
+    private Task AddMessage(MessageWithSenderDto message)
+    {
+        if (message.ConversationId.ToString() == ConversationId)
+        {
+            Messages.Add(message);
+            StateHasChanged();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task UpdateMessage(MessageWithSenderDto updatedMessage)
+    {
+        if (updatedMessage.ConversationId.ToString() == ConversationId)
+        {
+            var messageToUpdate = Messages
+                .FirstOrDefault(x => x.Id == updatedMessage.Id);
+            if (messageToUpdate is not null)
+            {
+                Messages[Messages.IndexOf(messageToUpdate)] = updatedMessage;
+                StateHasChanged();
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteMessage(MessageDto deletedMessage)
+    {
+        if (deletedMessage.ConversationId.ToString() == ConversationId)
+        {
+            var messageToDelete = Messages
+                .FirstOrDefault(x => x.Id == deletedMessage.Id);
+            if (messageToDelete is not null)
+            {
+                Messages.Remove(messageToDelete);
+                StateHasChanged();
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task AddUserToGroupAsync()
+    {
+        var newMemberData = new NewConversationMemberDto
+        {
+            ConversationId = int.Parse(ConversationId),
+            MemberUserName = UserName
+        };
+        var response = await ConversationService!.AddGroupMemberAsync(newMemberData);
+        if (!response.IsSuccessful)
+        {
+            ToastService!.ShowError(response.ErrorDetails!.Message);
+            return;
+        }
+        
+        ToastService!.ShowSuccess($"User {newMemberData.MemberUserName} is successfully added to this group!");
+        UserName = string.Empty;
+    }
+    
+    private async Task SendMessageAsync()
+    {
+        var messageData = GetCurrentMessageData();
+        var sentMessageResponse = await MessageService!.SendMessageAsync(messageData);
+        if (!sentMessageResponse.IsSuccessful)
+        {
+            ToastService!.ShowError(sentMessageResponse.ErrorDetails!.Message);
+            return;
+        }
+        await ChatSignallingService!.SendMessageAsync(ConversationId, sentMessageResponse.Content!);
+        ResetTextInMessageTextBox();
+        ResetAiAssistedFlag();
+    }
+
+    private async Task UpdateMessageAsync(MessageWithSenderDto messageData)
+    {
+        var messageDto = new MessageDto
+        {
+            TextContent = MessageText,
+            ConversationId = messageData.ConversationId,
+            IsRead = messageData.IsRead,
+            Id = messageData.Id,
+            SenderId = messageData.SenderId
+        };
+        var updatedMessageResponse = await MessageService!.UpdateMessageAsync(messageDto);
+        if (!updatedMessageResponse.IsSuccessful)
+        {
+            ToastService!.ShowError(updatedMessageResponse.ErrorDetails!.Message);
+            return;
+        }
+        messageData.TextContent = updatedMessageResponse.Content!.TextContent;
+        await ChatSignallingService!.UpdateMessageAsync(ConversationId, messageData);
+        ResetTextInMessageTextBox();
+    }
+
+    private async Task DeleteMessageAsync(MessageWithSenderDto messageData)
+    {
+        var deletedMessageResponse = await MessageService!.DeleteMessageAsync(messageData.Id);
+        if (deletedMessageResponse is not null)
+        {
+            ToastService!.ShowError(deletedMessageResponse.Message);
+            return;
+        }
+
+        await ChatSignallingService!.DeleteMessageAsync(ConversationId, messageData.MapToDo());
+        StateHasChanged();
+    }
+
+    private async Task CallUserAsync(CancellationToken cancellationToken)
+    {
+        Spinner!.Show();
+        IsCalling = true;
+        await VideoCallSignallingService!.CallUserAsync(GetCallData());
+        var timeout = TimeSpan.FromSeconds(11);
+        try
+        {
+            await Task.Delay(timeout, cancellationToken);
+            if (IsCalling)
+            {
+                IsCalling = false;
+                Spinner.Hide();
+                ToastService!.ShowError("No answer");
+            }
+        }
+        catch
+        {
+            // Just stop calling.
+        }
+    }
+    
+    private Task ReceiveCallAnswer(CallDto call)
+    {
+        Spinner!.Hide();
+        CancellationSource.Cancel();
+        CancellationSource.TryReset();
+        IsCalling = false;
+        if (call.Status == CallStatus.Accepted)
+        {
+            Navigation!.NavigateTo($"{RtcPage.Path}/{call.Id}");
+        }
+        else if (call.Status == CallStatus.NoAnswer)
+        {
+            ToastService!.ShowError("No answer");
+        }
+        else
+        {
+            ToastService!.ShowError($"Call is {call.Status.ToString().ToLower()}");
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private MessageDto GetCurrentMessageData() => new()
+    {
+        ConversationId = int.Parse(ConversationId),
+        IsAiAssisted = IsAiAssisted,
+        TextContent = MessageText
+    };
+
+    private CallDto GetCallData() => new()
+    {
+        Id = $"{ConversationId}_{Guid.NewGuid().ToString()}",
+        ConversationId = ConversationId,
+        ConversationTitle = ConversationTitle,
+        ConversationType = Enum.Parse<ConversationType>(ConversationType),
+        CallerUserName = CurrentUser.UserName
+    };
+
+    private void ResetTextInMessageTextBox() => MessageText = string.Empty;
+    private void ResetAiAssistedFlag() => IsAiAssisted = false;
+}

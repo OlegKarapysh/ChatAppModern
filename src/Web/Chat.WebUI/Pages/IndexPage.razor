@@ -1,0 +1,17 @@
+﻿@page "/"
+@using System.Security.Claims
+
+<PageTitle>Home</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h1>Hello, @(context.User.FindFirstValue("sub") ?? "Unknown")! What are you searching today?</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Hello, anonymous!</h1>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code 
+{
+}

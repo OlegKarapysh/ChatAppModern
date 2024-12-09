@@ -1,0 +1,112 @@
+﻿@inject IChatSignallingService ChatSignallingService
+@inject IVideoCallSignallingService VideoCallSignallingService
+@inject ISignallingConnectionService SignallingConnectionService
+@inject IConversationsWebApiService ConversationService
+@inject IToastService ToastService
+@inject NavigationManager Navigation
+@inject DialogService DialogService
+
+<ErrorBoundary @ref="ErrorBoundary">
+    <ChildContent>
+        <Spinner></Spinner>
+        <RadzenDialog></RadzenDialog>
+        <CascadingAuthenticationState>
+            <Router AppAssembly="@typeof(App).Assembly">
+                <Found Context="routeData">
+                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                        <NotAuthorized>
+                            <h4>Not authorized.</h4>
+                        </NotAuthorized>
+                        <Authorizing>
+                            <h4>Authentication in progress...</h4>
+                        </Authorizing>
+                    </AuthorizeRouteView>
+                    <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+                </Found>
+                <NotFound>
+                    <PageTitle>Not found</PageTitle>
+                    <LayoutView>
+                        <p role="alert">Sorry, there's nothing at this address.</p>
+                    </LayoutView>
+                </NotFound>
+            </Router>
+        </CascadingAuthenticationState>
+        <BlazoredToasts Position="ToastPosition.BottomRight"
+                        Timeout="10"
+                        IconType="IconType.FontAwesome"
+                        SuccessClass="success-toast-override"
+                        SuccessIcon="fa fa-thumbs-up"
+                        ErrorIcon="fa fa-bug"/>
+    </ChildContent>
+    <ErrorContent>
+        <div class="card col-md-6 offset-3">
+            <p>Oops, something went wrong...</p>
+            <button @onclick="() => ErrorBoundary.Recover()">Reload</button>
+        </div>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code 
+{
+    public ErrorBoundary ErrorBoundary { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TryConnectToHub();
+        SignallingConnectionService!.ReceivedMessage += ShowNotificationOnMessageReceived;
+        SignallingConnectionService.ReceivedCallRequest += AnswerOnCallReceived;
+        await base.OnInitializedAsync();
+    }
+
+    private Task ShowNotificationOnMessageReceived(MessageWithSenderDto message)
+    {
+        var messageConversationUri = $"{Navigation!.BaseUri}chat/{message.ConversationId}";
+        if (!Navigation!.Uri.StartsWith(messageConversationUri, StringComparison.Ordinal))
+        {
+            ToastService!.ShowInfo($"{message.UserName}: {message.TextContent}");
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    private async Task AnswerOnCallReceived(CallDto call)
+    {
+        var dialogTask = DialogService!.Confirm(
+            $"Do you want to accept the incoming call from {call.CallerUserName}?",
+            "Call") ?? Task.FromResult(new bool?(false));
+        var timeout = Task.Delay(TimeSpan.FromSeconds(10));
+        var completedTask = await Task.WhenAny(dialogTask, timeout);
+        if (completedTask == dialogTask && dialogTask.Result is not null && (bool)dialogTask.Result)
+        {
+            call.Status = CallStatus.Accepted;
+            Navigation!.NavigateTo($"{RtcPage.Path}/{call.Id}");
+        }
+        else if (completedTask == timeout)
+        {
+            call.Status = CallStatus.NoAnswer;
+        }
+        else
+        {
+            call.Status = CallStatus.Declined;
+        }
+        Console.WriteLine("answered status: " + call.Status.ToString());
+        await VideoCallSignallingService!.AnswerCallAsync(call);
+        DialogService.Close();
+    }
+
+    private async Task<bool> TryConnectToHub()
+    {
+        try
+        {
+            var conversationIds = await ConversationService!.GetAllUserConversationIdsAsync();
+            await SignallingConnectionService!.ConnectAsync();
+            await ChatSignallingService!.JoinConversationsAsync(
+                conversationIds.Content?.Select(x => x.ToString()).ToArray() ?? Array.Empty<string>());
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}

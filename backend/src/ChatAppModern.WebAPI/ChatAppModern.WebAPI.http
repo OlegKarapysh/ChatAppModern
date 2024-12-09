@@ -1,6 +1,0 @@
-@ChatAppModern.WebAPI_HostAddress = http://localhost:5143
-
-GET {{ChatAppModern.WebAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -1,6 +1,4 @@
-﻿
-
-namespace Chat.WebUI.Services;
+﻿namespace Chat.WebUI.Services;
 
 public abstract class WebApiServiceBase
 {

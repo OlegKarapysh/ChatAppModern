@@ -1,5 +1,4 @@
 ﻿@page "/ai-copilot"
-@using Chat.WebUI.Services.AiCopilot
 
 @attribute [Authorize]
 
@@ -22,7 +21,7 @@
         {
             <RadzenCard>
                 <div class="message-container">
-                    <RadzenText Style="text-wrap: normal">
+                    <RadzenText>
                         <strong>@(message.Sender): </strong> @message.Text
                     </RadzenText>
                 </div>
@@ -54,7 +53,7 @@
             ToastService!.ShowError(response.ErrorDetails.Message);
             return;
         }
-        
+
         if (response.Content is not null)
         {
             Messages.Add(MessageText);

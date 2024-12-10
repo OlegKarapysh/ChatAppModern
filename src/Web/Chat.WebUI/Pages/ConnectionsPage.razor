@@ -1,4 +1,4 @@
-﻿@page "/conversations"
+﻿@page "/connections"
 
 @attribute [Authorize]
 
@@ -7,9 +7,9 @@
 @inject IJSRuntime JsRuntime
 @inject NavigationManager Navigation
 
-<PageTitle>Conversations</PageTitle>
+<PageTitle>Connections</PageTitle>
 
-<h1>Conversations</h1>
+<h1>Connections</h1>
 
 <RadzenTextBox Placeholder="Type to search..." @bind-Value="SearchFilter"></RadzenTextBox>
 <RadzenDropDown TValue="string" Data="ConversationsProperties" @bind-Value="SortingProperty" Change="OnSortingPropertyChanged">
@@ -38,7 +38,7 @@
 
 @code 
 {
-    public const string Path = "/conversations";
+    public const string Path = "/connections";
     public const int DefaultPageNumbersCount = 3;
     
     [QueryStringParameter]

@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject IJwtAuthService AuthService
 @inject IToastService Notification
+
 @layout AuthLayout
 
 <PageTitle>Login</PageTitle>
@@ -46,6 +47,7 @@
 @code 
 {
     public const string Path = "/login";
+
     public LoginDto LoginData { get; set; } = new();
     public bool IsSubmitDisabled;
 

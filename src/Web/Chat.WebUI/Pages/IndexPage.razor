@@ -5,7 +5,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <h1>Hello, @(context.User.FindFirstValue("sub") ?? "Unknown")! What are you searching today?</h1>
+        <h1>Hello, @(context.User.FindFirstValue("sub") ?? "Unknown")!</h1>
     </Authorized>
     <NotAuthorized>
         <h1>Hello, anonymous!</h1>

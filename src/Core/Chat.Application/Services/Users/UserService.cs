@@ -31,10 +31,10 @@ public sealed class UserService : IUserService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<UsersPageDto> SearchUsersPagedAsync(PagedSearchDto searchData)
+    public Task<UsersPageDto> SearchUsersPagedAsync(PagedSearchDto searchData)
     {
         var foundUsers = _userRepository.SearchWhere<UserDto>(searchData.SearchFilter);
-        var usersCount = await foundUsers.CountAsync();
+        var usersCount = foundUsers.Count();
         var pageSize = PageInfo.DefaultPageSize;
         var foundUsersPage = foundUsers
                              .OrderBy(searchData.SortingProperty, searchData.SortingOrder)
@@ -43,11 +43,11 @@ public sealed class UserService : IUserService
                              .Select(x => x.MapToDto());
         var pageInfo = new PageInfo(usersCount, searchData.Page);
 
-        return new UsersPageDto
+        return Task.FromResult(new UsersPageDto
         {
             PageInfo = pageInfo,
             Users = foundUsersPage.ToArray()
-        };
+        });
     }
 
     public async Task<User> GetUserByIdAsync(int? id)

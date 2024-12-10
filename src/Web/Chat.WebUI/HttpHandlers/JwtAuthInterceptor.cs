@@ -20,7 +20,7 @@ public sealed class JwtAuthInterceptor : DelegatingHandler
         _notifyAuthenticationService = notifyAuthenticationService;
         _apiUrl = configuration["ApiUrl"]!;
     }
-    
+
      protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var jwt = (await _tokenService.GetTokensAsync()).AccessToken;
@@ -52,7 +52,7 @@ public sealed class JwtAuthInterceptor : DelegatingHandler
             TryAddBearerHeader(request, tokens?.AccessToken ?? string.Empty);
             return await base.SendAsync(request, cancellationToken);
         }
-        
+
         return response;
     }
 
@@ -62,7 +62,7 @@ public sealed class JwtAuthInterceptor : DelegatingHandler
         {
             return;
         }
-        
+
         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(BearerAuthScheme, token);
     }
 

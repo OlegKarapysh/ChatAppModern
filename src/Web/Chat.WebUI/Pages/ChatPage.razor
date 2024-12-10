@@ -71,12 +71,10 @@
     public const string Path = "/chat";
     public const string MessageButtonStyle = "width: 90px";
 
-    [Parameter]
-    public string ConversationTitle { get; set; } = string.Empty;
-    [Parameter]
-    public string ConversationId { get; set; } = string.Empty;
-    [Parameter]
-    public string ConversationType { get; set; } = string.Empty;
+    [Parameter] public string ConversationTitle { get; set; } = string.Empty;
+    [Parameter] public string ConversationId { get; set; } = string.Empty;
+    [Parameter] public string ConversationType { get; set; } = string.Empty;
+
     public string MessageText { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
     public bool IsAiAssisted { get; set; }

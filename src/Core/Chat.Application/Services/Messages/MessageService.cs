@@ -15,21 +15,21 @@ public sealed class MessageService : IMessageService
         _groupMessageRepository = _unitOfWork.GetRepository<GroupMessage, int>();
     }
 
-    public async Task<MessagesPageDto> SearchMessagesPagedAsync(PagedSearchDto searchData)
+    public Task<MessagesPageDto> SearchMessagesPagedAsync(PagedSearchDto searchData)
     {
         var foundMessages = _personalMessageRepository.SearchWhere<MessageBasicInfoDto>(searchData.SearchFilter);
-        var messagesCount = await foundMessages.CountAsync();
+        var messagesCount = foundMessages.Count();
         var pageSize = PageInfo.DefaultPageSize;
         var pageInfo = new PageInfo(messagesCount, searchData.Page);
         var foundMessagesPage = foundMessages
                                      .ToSortedPage(searchData.SortingProperty, searchData.SortingOrder, searchData.Page, pageSize)
                                      .Select(x => x.MapToBasicDto());
 
-        return new MessagesPageDto
+        return Task.FromResult(new MessagesPageDto
         {
             PageInfo = pageInfo,
             Messages = foundMessagesPage.ToArray()
-        };
+        });
     }
 
     public async Task<List<MessageWithSenderDto>> GetAllPersonalChatMessagesAsync(int connectionId)

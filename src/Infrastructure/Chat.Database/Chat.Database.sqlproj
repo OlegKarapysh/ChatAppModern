@@ -62,9 +62,6 @@
     <Folder Include="dbo\Tables\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\Messages.sql" />
-    <Build Include="dbo\Tables\Conversations.sql" />
-    <Build Include="dbo\Tables\Attachments.sql" />
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
     <Build Include="dbo\Tables\AspNetUsers.sql" />
     <Build Include="dbo\Tables\AspNetUserRoles.sql" />
@@ -72,9 +69,10 @@
     <Build Include="dbo\Tables\AspNetUserClaims.sql" />
     <Build Include="dbo\Tables\AspNetRoles.sql" />
     <Build Include="dbo\Tables\AspNetRoleClaims.sql" />
-    <Build Include="dbo\Tables\ConversationParticipants.sql" />
-    <Build Include="dbo\Tables\Groups.sql" />
     <Build Include="dbo\Tables\GroupMembers.sql" />
-    <Build Include="dbo\Tables\AssistantFiles.sql" />
+    <Build Include="dbo\Tables\PersonalMessages.sql" />
+    <Build Include="dbo\Tables\GroupMessages.sql" />
+    <Build Include="dbo\Tables\GroupChats.sql" />
+    <Build Include="dbo\Tables\Connections.sql" />
   </ItemGroup>
 </Project>

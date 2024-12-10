@@ -28,17 +28,12 @@ public sealed class ChatHub : Hub<IChatClient>, IChatHub
 
     public async Task CallUser(CallDto callData)
     {
-        if (callData.ConversationType != ConversationType.Dialog)
-        {
-            return;
-        }
-
-        await Clients.OthersInGroup(callData.ConversationId).ReceiveCallRequest(callData);
+        await Clients.OthersInGroup(callData.ConnectionId).ReceiveCallRequest(callData);
     }
 
     public async Task AnswerCall(CallDto callData)
     {
-        await Clients.OthersInGroup(callData.ConversationId).ReceiveCallAnswer(callData);
+        await Clients.OthersInGroup(callData.ConnectionId).ReceiveCallAnswer(callData);
     }
     
     public async Task Join(string channel)

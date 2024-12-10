@@ -1,4 +1,4 @@
-﻿namespace Chat.Domain.ValidationAttributes;
+﻿namespace Chat.Domain.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class IdentityPasswordAttribute : ValidationAttribute
@@ -11,6 +11,6 @@ public class IdentityPasswordAttribute : ValidationAttribute
         }
 
         const string passwordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\W]).+$";
-        return Regex.IsMatch(value.ToString(), passwordRegex);
+        return Regex.IsMatch(value.ToString() ?? string.Empty, passwordRegex);
     }
 }

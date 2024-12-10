@@ -19,8 +19,6 @@
 <RadzenCard Style="margin: 10px">
     <h3>@ConversationTitle</h3>
     <LinkComponent Path="@ChatsPage.Path" Text=" Go back to all chats"></LinkComponent>
-    @if (Enum.Parse<ConversationType>(ConversationType) == Domain.Entities.Conversations.ConversationType.Group)
-    {
         <div style="margin: 10px">
             <RadzenTextBox @bind-Value="UserName" Placeholder="Enter username..."></RadzenTextBox>
             <RadzenButton Click="async () => await AddUserToGroupAsync()" 
@@ -28,22 +26,18 @@
                 Add user to group
             </RadzenButton>
         </div>
-    }
-    @if (Enum.Parse<ConversationType>(ConversationType) == Domain.Entities.Conversations.ConversationType.Dialog)
-    {
         <div style="margin: 10px">
             <RadzenButton Click="async () => await CallUserAsync(CancellationSource.Token)">
                 Video call
             </RadzenButton>
         </div>
-    }
     <div style="margin: 10px; display: flex; flex-direction: column; gap: 5px; overflow: auto; max-height: 90%">
         @foreach (var message in Messages)
         {
             <RadzenCard>
                 <div class="message-container">
                     <RadzenText>
-                        <strong>@(message.UserName): </strong> @message.TextContent
+                        <strong>@(message.UserName): </strong> @message.Text
                     </RadzenText>
                     <div class="message-buttons-container">
                         <RadzenButton Style="@MessageButtonStyle" ButtonStyle="ButtonStyle.Danger" 
@@ -199,7 +193,7 @@
     {
         var messageDto = new MessageDto
         {
-            TextContent = MessageText,
+            Text = MessageText,
             ConversationId = messageData.ConversationId,
             IsRead = messageData.IsRead,
             Id = messageData.Id,
@@ -211,7 +205,7 @@
             ToastService!.ShowError(updatedMessageResponse.ErrorDetails!.Message);
             return;
         }
-        messageData.TextContent = updatedMessageResponse.Content!.TextContent;
+        messageData.Text = updatedMessageResponse.Content!.Text;
         await ChatSignallingService!.UpdateMessageAsync(ConversationId, messageData);
         ResetTextInMessageTextBox();
     }
@@ -277,15 +271,13 @@
     {
         ConversationId = int.Parse(ConversationId),
         IsAiAssisted = IsAiAssisted,
-        TextContent = MessageText
+        Text = MessageText
     };
 
     private CallDto GetCallData() => new()
     {
         Id = $"{ConversationId}_{Guid.NewGuid().ToString()}",
-        ConversationId = ConversationId,
-        ConversationTitle = ConversationTitle,
-        ConversationType = Enum.Parse<ConversationType>(ConversationType),
+        ConnectionId = ConversationId,
         CallerUserName = CurrentUser.UserName
     };
 

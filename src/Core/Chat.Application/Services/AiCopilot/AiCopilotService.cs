@@ -1,6 +1,4 @@
-﻿using Chat.Application.Services.Conversations;
-using Chat.Application.Services.Messages;
-using Microsoft.SemanticKernel.ChatCompletion;
+﻿using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OpenAI;
 
@@ -19,14 +17,14 @@ public sealed class AiCopilotService : IAiCopilotService
     public AiCopilotService(
         IConfiguration configuration,
         IMessageService messageService,
-        IConversationService conversationService,
+        GroupChatService groupChatService,
         IUserService userService)
     {
         var apiKey = configuration[OpenAiApiKeyName];
         ArgumentException.ThrowIfNullOrEmpty(apiKey);
         var kernelBuilder = Kernel.CreateBuilder();
         kernelBuilder.AddOpenAIChatCompletion(DefaultAiModel, new OpenAIClient(apiKey));
-        kernelBuilder.Plugins.AddFromObject(new MessageSenderPlugin(messageService, conversationService, userService));
+        kernelBuilder.Plugins.AddFromObject(new MessageSenderPlugin(messageService, userService, groupChatService));
         _kernel = kernelBuilder.Build();
         _chatCompletionService = _kernel.GetRequiredService<IChatCompletionService>();
         _promptExecutionSettings = new OpenAIPromptExecutionSettings

@@ -1,5 +1,4 @@
 ﻿@page "/chats"
-@using Chat.Domain.Errors
 @attribute [Authorize]
 
 @inject IConversationsWebApiService ConversationService
@@ -24,7 +23,7 @@
     {
         <RadzenCard Variant="Variant.Outlined">
             <div class="chat-container">
-                <p class="chat-name" @onclick="() => NavigateToConversation(conversation.Id, conversation.Title, conversation.Type)">
+                <p class="chat-name" @onclick="() => NavigateToConversation(conversation.Id, conversation.Title)">
                     @conversation.Title
                 </p>
                 <RadzenButton Variant="Variant.Flat" Click="() => RemoveUserFromConversationAsync(conversation)">
@@ -50,13 +49,13 @@
             return;
         }
         var sortedConversations = allConversationsResponse.Content!.OrderByDescending(
-            x => DateTime.ParseExact(x.UpdatedAt, ConversationMappings.SqlDateTimeFormat, CultureInfo.InvariantCulture));
+            x => DateTime.ParseExact(x.UpdatedAt, Formats.SqlDateTimeFormat, CultureInfo.InvariantCulture));
         Conversations.AddRange(sortedConversations);
     }
 
-    private void NavigateToConversation(int conversationId, string conversationTitle, ConversationType type)
+    private void NavigateToConversation(int conversationId, string conversationTitle)
     {
-        Navigation!.NavigateTo($"{ChatPage.Path}/{conversationId}/{conversationTitle}/{((int)type).ToString()}");
+        Navigation!.NavigateTo($"{ChatPage.Path}/{conversationId}/{conversationTitle}");
     }
 
     private async Task AddDialogAsync()
@@ -72,7 +71,7 @@
         var dialog = dialogResponse.Content!;
         if (Conversations.Select(x => x.Id).Contains(dialog.Id))
         {
-            NavigateToConversation(dialog.Id, dialog.Title, dialog.Type);
+            NavigateToConversation(dialog.Id, dialog.Title);
             return;
         }
         
@@ -82,7 +81,6 @@
             Title = dialog.Title,
             CreatedAt = dialog.CreatedAt,
             UpdatedAt = dialog.UpdatedAt,
-            Type = dialog.Type
         });
         await ChatSignallingService!.JoinConversationsAsync(new[] { dialog.Id.ToString() });
         InterlocutorUserName = string.Empty;
@@ -101,7 +99,7 @@
         var group = groupChatResponse.Content!;
         if (Conversations.Select(x => x.Id).Contains(group.Id))
         {
-            NavigateToConversation(group.Id, group.Title, group.Type);
+            NavigateToConversation(group.Id, group.Title);
             return;
         }
         

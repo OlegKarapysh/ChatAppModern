@@ -2,40 +2,34 @@
 
 public static class GroupMappings
 {
-    public static GroupDto MapToDto(this Group group)
+    public static GroupDto MapToDto(this GroupChat groupChat)
     {
         return new GroupDto
         {
-            Id = group.Id,
-            Name = group.Name,
-            Instructions = group.Instructions,
-            AssistantId = group.AssistantId,
-            CreatorId = group.CreatorId
+            Id = groupChat.Id,
+            Name = groupChat.GroupName,
+            CreatorId = groupChat.CreatorId
         };
     }
 
-    public static GroupInfoDto MapToInfoDto(this Group group)
+    public static GroupInfoDto MapToInfoDto(this GroupChat groupChat)
     {
         return new GroupInfoDto
         {
-            Id = group.Id,
-            Name = group.Name,
-            Instructions = group.Instructions,
-            FilesCount = group.Files.Count,
-            MembersCount = group.Members.Count
+            Id = groupChat.Id,
+            Name = groupChat.GroupName,
+            MembersCount = groupChat.Members.Count
         };
     }
 
-    public static GroupWithMembersDto MapToWithMembersDto(this Group group)
+    public static GroupWithMembersDto MapToWithMembersDto(this GroupChat groupChat)
     {
         return new GroupWithMembersDto
         {
-            Id = group.Id,
-            Name = group.Name,
-            Instructions = group.Instructions,
-            AssistantId = group.AssistantId,
-            CreatorId = group.CreatorId,
-            Members = group.Members.Select(x => x.MapToDto()).ToList()
+            Id = groupChat.Id,
+            Name = groupChat.GroupName,
+            CreatorId = groupChat.CreatorId,
+            Members = groupChat.Members.Select(x => x.MapToDto()).ToList()
         };
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Chat.IntegrationTests.WebApiTests;
+﻿using Chat.Domain.Entities.Connections;
+
+namespace Chat.IntegrationTests.WebApiTests;
 
 [Collection("Sequential")]
 public sealed class MessagesTest : IClassFixture<IntegrationTest>
@@ -26,7 +28,7 @@ public sealed class MessagesTest : IClassFixture<IntegrationTest>
         };
         var searchDto = new PagedSearchDto
         {
-            Page = expectedPageInfo.CurrentPage, SearchFilter = search, SortingProperty = nameof(Message.TextContent),
+            Page = expectedPageInfo.CurrentPage, SearchFilter = search, SortingProperty = nameof(PersonalMessage.Text),
             SortingOrder = SortingOrder.Descending
         };
         var routeWithParams =
@@ -46,7 +48,7 @@ public sealed class MessagesTest : IClassFixture<IntegrationTest>
             result!.Should()!.NotBeNull();
             result!.PageInfo!.Should()!.BeEquivalentTo(expectedPageInfo);
             result.Messages!.Length.Should()!.Be(expectedCount);
-            result.Messages!.Should()!.BeEquivalentTo(result.Messages.OrderByDescending(x => x.TextContent));
+            result.Messages!.Should()!.BeEquivalentTo(result.Messages.OrderByDescending(x => x.Text));
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Chat.Application.Services.AiCopilot;
+using Chat.Application.Services.Connections;
+using Chat.Application.Services.Groups;
 
 namespace Chat.WebAPI.Extensions;
 
@@ -22,8 +24,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IConversationService, ConversationService>();
+        services.AddScoped<IConnectionService, ConnectionService>();
         services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<GroupChatService>();
         services.AddScoped<IAiCopilotService, AiCopilotService>();
     }
 

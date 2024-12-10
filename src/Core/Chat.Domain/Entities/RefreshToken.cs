@@ -1,8 +1,9 @@
 ﻿namespace Chat.Domain.Entities;
 
-public class RefreshToken
+public sealed class RefreshToken
 {
     public readonly TimeSpan Lifetime = TimeSpan.FromDays(2);
+
     public string Token { get; init; }
     public DateTime ExpirationTime { get; init; }
 

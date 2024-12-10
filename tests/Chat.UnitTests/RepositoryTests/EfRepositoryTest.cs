@@ -1,4 +1,6 @@
-﻿namespace Chat.UnitTests.RepositoryTests;
+﻿using Chat.Domain.Entities.Groups;
+
+namespace Chat.UnitTests.RepositoryTests;
 
 public sealed class EfRepositoryTest : IDisposable
 {
@@ -30,39 +32,39 @@ public sealed class EfRepositoryTest : IDisposable
     {
         // Arrange.
         var expectedEntity = (await _sut.GetAllAsync()).First();
-        
+
         // Act.
         var result = await _sut.GetByIdAsync(expectedEntity.Id);
 
         // Assert.
         result!.Should()!.NotBeNull()!.And!.BeEquivalentTo(expectedEntity);
     }
-    
+
     [Fact]
     public async Task GetByIdAsync_ReturnsNull_WhenEntityNotFound()
     {
         // Arrange.
         const int invalidId = int.MinValue;
-        
+
         // Act.
         var result = await _sut.GetByIdAsync(invalidId);
 
         // Assert.
         result!.Should()!.BeNull();
     }
-    
+
     [Fact]
     public async Task AddAsync_AddsEntityAndReturnsIt()
     {
         // Arrange.
         var expectedCount = (await _sut.GetAllAsync()).Count + 1;
         var entity = TestDataGenerator.GenerateUser();
-        
+
         // Act.
         var result = await _sut.AddAsync(entity);
         await _context.SaveChangesAsync();
         var resultCount = (await _sut.GetAllAsync()).Count;
-        
+
         // Assert.
         using (new AssertionScope())
         {
@@ -76,11 +78,11 @@ public sealed class EfRepositoryTest : IDisposable
     {
         // Arrange.
         var context = CreateDbContext();
-        var sut = new EfRepository<ConversationParticipant, int>(context);
+        var sut = new EfRepository<GroupMember, int>(context);
         var all = await sut.GetAllAsync();
         var expectedCount = all.Count - 1;
         var existingId = all.First().Id;
-        
+
         // Act.
         var result = await sut.RemoveAsync(existingId);
         await context.SaveChangesAsync();
@@ -90,16 +92,16 @@ public sealed class EfRepositoryTest : IDisposable
         using (new AssertionScope())
         {
             result.Should()!.BeTrue();
-            resultCount.Should()!.Be(expectedCount); 
+            resultCount.Should()!.Be(expectedCount);
         }
     }
-    
+
     [Fact]
     public async Task RemoveAsync_ReturnsFalse_WhenEntityNotFound()
     {
         // Arrange.
         var context = CreateDbContext();
-        var sut = new EfRepository<ConversationParticipant, int>(context);
+        var sut = new EfRepository<GroupMember, int>(context);
         const int invalidId = int.MinValue;
         var expectedCount = (await sut.GetAllAsync()).Count;
         

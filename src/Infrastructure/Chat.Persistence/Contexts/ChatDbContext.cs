@@ -3,15 +3,13 @@
 public class ChatDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public const string SqlGetDateFunction = "getutcdate()";
-    
-    public DbSet<Conversation> Conversations => Set<Conversation>();
-    public DbSet<Message> Messages => Set<Message>();
-    public DbSet<Attachment> Attachments => Set<Attachment>();
-    public DbSet<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>();
-    public DbSet<Group> Groups => Set<Group>();
+
+    public DbSet<Connection> Connections => Set<Connection>();
+    public DbSet<PersonalMessage> PersonalMessages => Set<PersonalMessage>();
+    public DbSet<GroupChat> GroupChats => Set<GroupChat>();
     public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
-    public DbSet<AssistantFile> AssistantFiles => Set<AssistantFile>();
-    
+    public DbSet<GroupMessage> GroupMessages => Set<GroupMessage>();
+
     public ChatDbContext()
     {
     }
@@ -22,6 +20,6 @@ public class ChatDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MessageConfig).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersonalMessageConfig).Assembly);
     }
 }

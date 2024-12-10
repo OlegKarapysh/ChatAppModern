@@ -19,7 +19,7 @@ public sealed class MessagesModifyTest : IClassFixture<IntegrationTest>
         await _test.LoginAsync();
         const int conversationId = 16;
         var allMessagesRoute = $"api/messages/all/{conversationId}";
-        var messageDto = new MessageDto { TextContent = "new message", ConversationId = conversationId };
+        var messageDto = new MessageDto { Text = "new message", ConversationId = conversationId };
         
         // Act.
         var messagesBeforeAdding = await _test.HttpClient.GetFromJsonAsync<IList<MessageWithSenderDto>>(allMessagesRoute);
@@ -33,7 +33,7 @@ public sealed class MessagesModifyTest : IClassFixture<IntegrationTest>
             addMessageResponse.EnsureSuccessStatusCode();
             addedMessage!.Should()!.NotBeNull();
             addedMessage!.ConversationId.Should()!.Be(conversationId);
-            addedMessage.TextContent.Should()!.Be(messageDto.TextContent);
+            addedMessage.Text.Should()!.Be(messageDto.Text);
             messagesBeforeAdding!.Should()!.NotContain(x => x.Id == addedMessage.Id);
             messagesAfterAdding!.Should()!.ContainSingle(x => x.Id == addedMessage.Id);
         }
@@ -83,7 +83,7 @@ public sealed class MessagesModifyTest : IClassFixture<IntegrationTest>
         await _test.LoginAsync();
         const int conversationId = 17;
         const int messageId = 110;
-        var messageDto = new MessageDto { Id = messageId, ConversationId = conversationId, TextContent = "TestUpdated" };
+        var messageDto = new MessageDto { Id = messageId, ConversationId = conversationId, Text = "TestUpdated" };
         var messageBeforeUpdating = _testDbHelper.GetMessageById(messageId)!;
         
         // Act.
@@ -96,10 +96,10 @@ public sealed class MessagesModifyTest : IClassFixture<IntegrationTest>
         {
             updateResponse.EnsureSuccessStatusCode();
             updatedMessage!.Should()!.NotBeNull();
-            updatedMessage!.TextContent.Should()!.Be(messageDto.TextContent);
+            updatedMessage!.Text.Should()!.Be(messageDto.Text);
             updatedMessage.ConversationId.Should()!.Be(conversationId);
-            messageBeforeUpdating.TextContent.Should()!.NotBe(messageDto.TextContent);
-            messageAfterUpdating.TextContent.Should()!.Be(messageDto.TextContent);
+            messageBeforeUpdating.Text.Should()!.NotBe(messageDto.Text);
+            messageAfterUpdating.Text.Should()!.Be(messageDto.Text);
         }
     }
 
@@ -110,7 +110,7 @@ public sealed class MessagesModifyTest : IClassFixture<IntegrationTest>
         await _test.LoginAsync();
         const int conversationId = 17;
         const int fakeMessageId = int.MaxValue;
-        var messageDto = new MessageDto { Id = fakeMessageId, ConversationId = conversationId, TextContent = "a" };
+        var messageDto = new MessageDto { Id = fakeMessageId, ConversationId = conversationId, Text = "a" };
         
         // Act.
         var updateResponse = await _test.HttpClient.PutAsJsonAsync("api/messages", messageDto);
@@ -128,7 +128,7 @@ public sealed class MessagesModifyTest : IClassFixture<IntegrationTest>
         const int conversationId = 17;
         var messageDto = new MessageDto
         {
-            Id = messageIdSentByAnotherUser, ConversationId = conversationId, TextContent = "a"
+            Id = messageIdSentByAnotherUser, ConversationId = conversationId, Text = "a"
         };
         
         // Act.

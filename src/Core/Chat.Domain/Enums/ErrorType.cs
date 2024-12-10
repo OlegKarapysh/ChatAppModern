@@ -1,4 +1,4 @@
-﻿namespace Chat.Domain.Errors;
+﻿namespace Chat.Domain.Enums;
 
 public enum ErrorType
 {

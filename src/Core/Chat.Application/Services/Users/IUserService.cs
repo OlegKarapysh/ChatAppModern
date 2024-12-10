@@ -2,7 +2,7 @@
 
 public interface IUserService
 {
-    Task<IList<UserDto>> GetAllUsersAsync();
+    Task<List<UserDto>> GetAllUsersAsync();
     Task<UserDto> GetUserDtoByIdAsync(int id);
     Task UpdateUserAsync(UserDto userData, int id);
     Task<UsersPageDto> SearchUsersPagedAsync(PagedSearchDto searchData);

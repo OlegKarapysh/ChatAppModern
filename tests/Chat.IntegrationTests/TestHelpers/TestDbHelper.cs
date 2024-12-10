@@ -1,4 +1,6 @@
-﻿namespace Chat.IntegrationTests.TestHelpers;
+﻿using Chat.Domain.Entities.Connections;
+
+namespace Chat.IntegrationTests.TestHelpers;
 
 internal sealed class TestDbHelper
 {
@@ -9,9 +11,9 @@ internal sealed class TestDbHelper
         _testAppFactory = testAppFactory;
     }
 
-    internal Message? GetMessageById(int messageId)
+    internal PersonalMessage? GetMessageById(int messageId)
     {
-        return GetFromDb(x => x.Messages.Find(messageId));
+        return GetFromDb(x => x.PersonalMessages.Find(messageId));
     }
 
     internal int CountUsers()

@@ -63,7 +63,7 @@
         var messageConversationUri = $"{Navigation!.BaseUri}chat/{message.ConversationId}";
         if (!Navigation!.Uri.StartsWith(messageConversationUri, StringComparison.Ordinal))
         {
-            ToastService!.ShowInfo($"{message.UserName}: {message.TextContent}");
+            ToastService!.ShowInfo($"{message.UserName}: {message.Text}");
         }
         
         return Task.CompletedTask;
@@ -89,7 +89,7 @@
         {
             call.Status = CallStatus.Declined;
         }
-        Console.WriteLine("answered status: " + call.Status.ToString());
+        Console.WriteLine("answered status: " + call.Status);
         await VideoCallSignallingService!.AnswerCallAsync(call);
         DialogService.Close();
     }
@@ -101,7 +101,7 @@
             var conversationIds = await ConversationService!.GetAllUserConversationIdsAsync();
             await SignallingConnectionService!.ConnectAsync();
             await ChatSignallingService!.JoinConversationsAsync(
-                conversationIds.Content?.Select(x => x.ToString()).ToArray() ?? Array.Empty<string>());
+                conversationIds.Content?.Select(x => x.ToString()).ToArray() ?? []);
             return true;
         }
         catch

@@ -12,7 +12,6 @@ global using Chat.DomainServices.Repositories;
 global using Chat.DomainServices.UnitsOfWork;
 global using Chat.Persistence.Contexts;
 global using Chat.Persistence.Repositories;
-global using Chat.Domain.Entities.Attachments;
-global using Chat.Domain.Entities.Conversations;
+global using Chat.Domain.Entities.Connections;
 global using Chat.Domain.Entities.Groups;
 

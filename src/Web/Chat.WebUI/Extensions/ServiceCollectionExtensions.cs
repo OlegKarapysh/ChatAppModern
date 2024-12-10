@@ -23,7 +23,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUsersWebApiService, UsersWebApiService>();
         services.AddScoped<IConversationsWebApiService, ConversationsWebApiService>();
         services.AddScoped<IMessagesWebApiService, MessagesWebApiService>();
-        services.AddScoped<IOpenAiWebApiService, OpenAiWebApiService>();
         services.AddScoped<IAiCopilotWebApiService, AiCopilotWebApiService>();
     }
 

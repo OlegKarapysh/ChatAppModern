@@ -1,4 +1,6 @@
-﻿namespace Chat.Domain.DTOs.Authentication;
+﻿using Chat.Domain.Attributes;
+
+namespace Chat.Domain.DTOs.Authentication;
 
 public class LoginDto
 {
@@ -6,6 +8,7 @@ public class LoginDto
     [StringLength(100, MinimumLength = 3, ErrorMessage = "Email must be between 3 and 100 characters long!")]
     [EmailAddress(ErrorMessage = "Email must be valid!")]
     public string Email { get; set; } = default!;
+
     [Required(ErrorMessage = "Password is required!")]
     [IdentityPassword(ErrorMessage =
         "Password must contain an uppercase character, a lowercase character, a digit, and a non-alphanumeric character!")]

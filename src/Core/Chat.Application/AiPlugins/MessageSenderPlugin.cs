@@ -1,23 +1,18 @@
-﻿using System.ComponentModel;
-using Chat.Application.Services.Conversations;
-using Chat.Application.Services.Messages;
-
-namespace Chat.Application.AiPlugins;
+﻿namespace Chat.Application.AiPlugins;
 
 public sealed class MessageSenderPlugin
 {
     private readonly IMessageService _messageService;
-    private readonly IConversationService _conversationService;
     private readonly IUserService _userService;
+    private readonly GroupChatService _groupChatService;
 
     public MessageSenderPlugin(
         IMessageService messageService,
-        IConversationService conversationService,
-        IUserService userService)
+        IUserService userService, GroupChatService groupChatService)
     {
         _messageService = messageService;
-        _conversationService = conversationService;
         _userService = userService;
+        _groupChatService = groupChatService;
     }
 
     [KernelFunction]
@@ -33,16 +28,16 @@ public sealed class MessageSenderPlugin
         string chatTitle)
     {
         var senderId = (await _userService.GetUserByNameAsync(senderUsername)).Id;
-        var conversationId = (await _conversationService.GetConversationByTitleAsync(chatTitle)).Id;
+        var groupChatId = (await _groupChatService.GetGroupChatByNameAsync(chatTitle)).Id;
         var messageDto = new MessageDto
         {
-            TextContent = message,
-            ConversationId = conversationId,
+            Text = message,
+            ConversationId = groupChatId,
             IsAiAssisted = true,
             SenderId = senderId
         };
         var messageResponse = await _messageService.CreateMessageAsync(messageDto);
 
-        return messageResponse.TextContent;
+        return messageResponse.Text;
     }
 }

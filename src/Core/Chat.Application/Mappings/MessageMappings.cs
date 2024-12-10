@@ -1,58 +1,67 @@
-﻿namespace Chat.Application.Mappings;
+﻿using Chat.Domain.Entities.Connections;
+
+namespace Chat.Application.Mappings;
 
 public static class MessageMappings
 {
     private const string SqlDateTimeFormat = "yyyy-MM-dd HH:mm:ss.fffffff";
     
-    public static MessageBasicInfoDto MapToBasicDto(this Message message)
+    public static MessageBasicInfoDto MapToBasicDto(this PersonalMessage message)
     {
         return new MessageBasicInfoDto
         {
-            TextContent = message.TextContent,
+            Text = message.Text,
             CreatedAt = message.CreatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture),
             UpdatedAt = message.UpdatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture)
         };
     }
     
-    public static MessageDto MapToDto(this Message message)
+    public static MessageDto MapToDto(this PersonalMessage message)
     {
         return new MessageDto
         {
             Id = message.Id,
             IsRead = message.IsRead,
-            IsAiAssisted = message.IsAiAssisted,
-            ConversationId = message.ConversationId ?? default,
             SenderId = message.SenderId ?? default,
-            TextContent = message.TextContent,
+            Text = message.Text,
             CreatedAt = message.CreatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture),
             UpdatedAt = message.UpdatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture)
         };
     }
     
-    public static MessageWithSenderDto MapToDtoWithSender(this Message message)
+    public static MessageWithSenderDto MapToDtoWithSender(this PersonalMessage message)
     {
         return new MessageWithSenderDto
         {
             Id = message.Id,
             IsRead = message.IsRead,
-            IsAiAssisted = message.IsAiAssisted,
-            ConversationId = message.ConversationId ?? default,
             SenderId = message.SenderId ?? default,
             UserName = message.Sender?.UserName ?? string.Empty,
-            TextContent = message.TextContent,
+            Text = message.Text,
             CreatedAt = message.CreatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture),
             UpdatedAt = message.UpdatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture)
         };
     }
     
-    public static Message MapFrom(this Message message, MessageDto messageDto)
+    public static MessageWithSenderDto MapToDtoWithSender(this GroupMessage message)
+    {
+        return new MessageWithSenderDto
+        {
+            Id = message.Id,
+            SenderId = message.SenderId ?? default,
+            UserName = message.Sender?.UserName ?? string.Empty,
+            Text = message.Text,
+            CreatedAt = message.CreatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture),
+            UpdatedAt = message.UpdatedAt.ToString(SqlDateTimeFormat, CultureInfo.InvariantCulture)
+        };
+    }
+    
+    public static PersonalMessage MapFrom(this PersonalMessage message, MessageDto messageDto)
     {
         message.Id = messageDto.Id;
         message.IsRead = messageDto.IsRead;
-        message.IsAiAssisted = messageDto.IsAiAssisted;
         message.SenderId = messageDto.SenderId;
-        message.ConversationId = messageDto.ConversationId;
-        message.TextContent = messageDto.TextContent;
+        message.Text = messageDto.Text;
         
         return message;
     }
@@ -62,7 +71,7 @@ public static class MessageMappings
         return new MessageDto
         {
             Id = message.Id,
-            TextContent = message.TextContent,
+            Text = message.Text,
             IsRead = message.IsRead,
             IsAiAssisted = message.IsAiAssisted,
             SenderId = message.SenderId,

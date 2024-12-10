@@ -1,4 +1,5 @@
-﻿using MockQueryable;
+﻿using Chat.Domain.Entities.Connections;
+using MockQueryable;
 
 namespace Chat.UnitTests.ApplicationTests.Services;
 
@@ -10,11 +11,11 @@ public sealed class MessageServiceTest
     private readonly IMessageService _sut;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IUserService> _userServiceMock = new();
-    private readonly Mock<IRepository<Message, int>> _messageRepositoryMock = new();
+    private readonly Mock<IRepository<PersonalMessage, int>> _messageRepositoryMock = new();
 
     public MessageServiceTest()
     {
-        _unitOfWorkMock.Setup(x => x.GetRepository<Message, int>()).Returns(_messageRepositoryMock.Object);
+        _unitOfWorkMock.Setup(x => x.GetRepository<PersonalMessage, int>()).Returns(_messageRepositoryMock.Object);
         _sut = new MessageService(_userServiceMock.Object, _unitOfWorkMock.Object);
     }
 
@@ -26,7 +27,7 @@ public sealed class MessageServiceTest
         var pageSearchDto = new PagedSearchDto
         {
             Page = expectedMessagesPage.PageInfo!.CurrentPage, SearchFilter = "filter",
-            SortingProperty = nameof(Message.TextContent), SortingOrder = SortingOrder.Descending
+            SortingProperty = nameof(PersonalMessage.Text), SortingOrder = SortingOrder.Descending
         };
         _messageRepositoryMock.Setup(x => x.SearchWhere<MessageBasicInfoDto>(pageSearchDto.SearchFilter))
                            .Returns(messages.AsQueryable());
@@ -57,7 +58,7 @@ public sealed class MessageServiceTest
         _messageRepositoryMock.Setup(x => x.AsQueryable()).Returns(allMessages.BuildMock()!);
         
         // Act.
-        var result = await _sut.GetAllConversationMessagesAsync(Id);
+        var result = await _sut.GetAllPersonalChatMessagesAsync(Id);
 
         // Assert.
         result.Should()!.BeEquivalentTo(expectedMessages);
@@ -71,7 +72,7 @@ public sealed class MessageServiceTest
         _messageRepositoryMock.Setup(x => x.AsQueryable()).Returns(allMessages.BuildMock()!);
         
         // Act.
-        var result = await _sut.GetAllConversationMessagesAsync(Id);
+        var result = await _sut.GetAllPersonalChatMessagesAsync(Id);
 
         // Assert.
         result.Should()!.BeEmpty();
@@ -81,7 +82,7 @@ public sealed class MessageServiceTest
     public void UpdateMessageAsync_ThrowsEntityNotFoundException_WhenMessageNotFound()
     {
         // Arrange.
-        _messageRepositoryMock.Setup(x => x.GetByIdAsync(Id)).ReturnsAsync((Message)null!);
+        _messageRepositoryMock.Setup(x => x.GetByIdAsync(Id)).ReturnsAsync((PersonalMessage)null!);
         
         // Act.
         var tryUpdateMessage = async () => await _sut.UpdateMessageAsync(new MessageDto(), Id);
@@ -114,11 +115,11 @@ public sealed class MessageServiceTest
         const string updatedMessageText = "newMessage";
         var message = TestDataGenerator.GenerateMessage(Id, oldMessageText);
         var updatedMessage = CopyMessage(message);
-        updatedMessage.TextContent = updatedMessageText;
+        updatedMessage.Text = updatedMessageText;
         var messageDto = updatedMessage.MapToDto();
         _messageRepositoryMock.Setup(x => x.GetByIdAsync(message.Id)).ReturnsAsync(message);
         _messageRepositoryMock.Setup(x => x.Update(
-                                  It.Is<Message>(m => m.TextContent == updatedMessageText && m.SenderId == message.SenderId)))
+                                  It.Is<PersonalMessage>(m => m.Text == updatedMessageText && m.SenderId == message.SenderId)))
                               .Returns(updatedMessage);
 
         // Act.
@@ -157,14 +158,14 @@ public sealed class MessageServiceTest
         const int senderId = 10;
         var messageDto = new MessageDto
         {
-            Id = Id, ConversationId = conversationId, SenderId = senderId, TextContent = MessageText
+            Id = Id, ConversationId = conversationId, SenderId = senderId, Text = MessageText
         };
-        var message = new Message
+        var message = new PersonalMessage
         {
-            Id = Id, ConversationId = conversationId, SenderId = senderId, TextContent = MessageText
+            Id = Id, ConnectionId = conversationId, SenderId = senderId, Text = MessageText
         };
         var sender = new User { UserName = UserName };
-        _messageRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Message>()))
+        _messageRepositoryMock.Setup(x => x.AddAsync(It.IsAny<PersonalMessage>()))
                                .ReturnsAsync(message);
         _userServiceMock.Setup(x => x.GetUserByIdAsync(senderId)).ReturnsAsync(sender);
         
@@ -177,48 +178,47 @@ public sealed class MessageServiceTest
             result.UserName.Should()!.Be(sender.UserName);
             result.ConversationId.Should()!.Be(messageDto.ConversationId);
             result.SenderId.Should()!.Be(messageDto.SenderId);
-            result.TextContent.Should()!.Be(messageDto.TextContent);
+            result.Text.Should()!.Be(messageDto.Text);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(default), Times.Once);
         }
     }
     
-    private (List<Message> Messages, MessagesPageDto MessagesPage) GetTestMessagesWithMessagesPage()
+    private (List<PersonalMessage> Messages, MessagesPageDto MessagesPage) GetTestMessagesWithMessagesPage()
     {
-        return (new List<Message>
+        return (new List<PersonalMessage>
         {
-            new() { TextContent = "text01" },
-            new() { TextContent = "text09" },
-            new() { TextContent = "text02" },
-            new() { TextContent = "text08" },
-            new() { TextContent = "text03" },
-            new() { TextContent = "text07" },
-            new() { TextContent = "text04" },
-            new() { TextContent = "text06" },
-            new() { TextContent = "text05" },
-            new() { TextContent = "text10" },
-            new() { TextContent = "text11" },
+            new() { Text = "text01" },
+            new() { Text = "text09" },
+            new() { Text = "text02" },
+            new() { Text = "text08" },
+            new() { Text = "text03" },
+            new() { Text = "text07" },
+            new() { Text = "text04" },
+            new() { Text = "text06" },
+            new() { Text = "text05" },
+            new() { Text = "text10" },
+            new() { Text = "text11" },
         }, new MessagesPageDto
         {
             Messages = new MessageBasicInfoDto[]
             {
-                new() { TextContent = "text06" },
-                new() { TextContent = "text05" },
-                new() { TextContent = "text04" },
-                new() { TextContent = "text03" },
-                new() { TextContent = "text02" },
+                new() { Text = "text06" },
+                new() { Text = "text05" },
+                new() { Text = "text04" },
+                new() { Text = "text03" },
+                new() { Text = "text02" },
             },
             PageInfo = new PageInfo { CurrentPage = 2, PageSize = PageInfo.DefaultPageSize, TotalCount = 11, TotalPages = 3 }
         });
     }
 
-    private Message CopyMessage(Message message) => new()
+    private PersonalMessage CopyMessage(PersonalMessage message) => new()
     {
         Id = message.Id,
-        ConversationId = message.ConversationId,
+        ConnectionId = message.ConnectionId,
         SenderId = message.SenderId,
         Sender = message.Sender,
-        Conversation = message.Conversation,
-        TextContent = message.TextContent,
+        Text = message.Text,
         CreatedAt = message.CreatedAt,
         UpdatedAt = message.UpdatedAt
     };

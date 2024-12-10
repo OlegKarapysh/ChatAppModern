@@ -1,4 +1,6 @@
-﻿namespace Chat.UnitTests.TestHelpers;
+﻿using Chat.Domain.Entities.Connections;
+
+namespace Chat.UnitTests.TestHelpers;
 
 public static class TestDataGenerator
 {
@@ -11,21 +13,21 @@ public static class TestDataGenerator
         Randomizer.Seed = new Random(defaultSeed);
     }
 
-    public static List<Message> GenerateMessagesForDialog(int count, int conversationId, string? text = null)
+    public static List<PersonalMessage> GenerateMessagesForDialog(int count, int connectionId, string? text = null)
     {
         var interlocutors = GenerateUsers(2);
-        return new Faker<Message>()
+        return new Faker<PersonalMessage>()
                .RuleFor(x => x.Id, f => f.IndexFaker)!
-               .RuleFor(x => x.TextContent, f => text ?? f.Lorem!.Sentence())!
+               .RuleFor(x => x.Text, f => text ?? f.Lorem!.Sentence())!
                .RuleFor(x => x.CreatedAt, _ => DefaultDate)!
                .RuleFor(x => x.UpdatedAt, _ => DefaultDate)!
-               .RuleFor(x => x.ConversationId, _ => conversationId)!
+               .RuleFor(x => x.ConnectionId, _ => connectionId)!
                .RuleFor(x => x.Sender, f => f.PickRandom(interlocutors))!
                .RuleFor(x => x.SenderId, (_, p) => p.Sender!.Id)!
                .Generate(count)!;
     }
 
-    public static Message GenerateMessage(int conversationId, string? text = null)
+    public static PersonalMessage GenerateMessage(int conversationId, string? text = null)
     {
         return GenerateMessagesForDialog(count: 1, conversationId, text).First();
     }

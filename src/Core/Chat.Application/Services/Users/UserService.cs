@@ -13,7 +13,7 @@ public sealed class UserService : IUserService
         _userRepository = _unitOfWork.GetRepository<User, int>();
     }
 
-    public async Task<IList<UserDto>> GetAllUsersAsync()
+    public async Task<List<UserDto>> GetAllUsersAsync()
     {
         return (await _userRepository.GetAllAsync()).Select(x => x.MapToDto()).ToList();
     }
@@ -34,7 +34,7 @@ public sealed class UserService : IUserService
     public async Task<UsersPageDto> SearchUsersPagedAsync(PagedSearchDto searchData)
     {
         var foundUsers = _userRepository.SearchWhere<UserDto>(searchData.SearchFilter);
-        var usersCount = foundUsers.Count();
+        var usersCount = await foundUsers.CountAsync();
         var pageSize = PageInfo.DefaultPageSize;
         var foundUsersPage = foundUsers
                              .OrderBy(searchData.SortingProperty, searchData.SortingOrder)
@@ -42,12 +42,12 @@ public sealed class UserService : IUserService
                              .Take(pageSize)
                              .Select(x => x.MapToDto());
         var pageInfo = new PageInfo(usersCount, searchData.Page);
-        
-        return await Task.FromResult(new UsersPageDto
+
+        return new UsersPageDto
         {
             PageInfo = pageInfo,
             Users = foundUsersPage.ToArray()
-        });
+        };
     }
 
     public async Task<User> GetUserByIdAsync(int? id)
@@ -56,13 +56,13 @@ public sealed class UserService : IUserService
         {
             throw new EntityNotFoundException(nameof(User));
         }
-        
-        return await _userRepository.GetByIdAsync((int)id) ?? throw new EntityNotFoundException(nameof(User));
+
+        return await _userRepository.GetByIdAsync(id.Value) ?? throw new EntityNotFoundException(nameof(User));
     }
-    
+
     public async Task<User> GetUserByNameAsync(string userName)
     {
-        return await _userManager.FindByNameAsync(userName) 
+        return await _userManager.FindByNameAsync(userName)
                ?? throw new EntityNotFoundException(nameof(User), nameof(User.UserName));
     }
 }

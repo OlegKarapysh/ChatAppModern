@@ -19,7 +19,7 @@ public sealed class MessagesController : ControllerBase
     [HttpGet("all/{conversationId:int}")]
     public async Task<ActionResult<IList<MessageWithSenderDto>>> GetAllConversationMessagesAsync(int conversationId)
     {
-        return Ok(await _messageService.GetAllConversationMessagesAsync(conversationId));
+        return Ok(await _messageService.GetAllPersonalChatMessagesAsync(conversationId));
     }
 
     [HttpPost]
